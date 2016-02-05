@@ -32,7 +32,7 @@ In other words, creating a new object containing properties `p1` and `p2` drawn 
 This is commonly referred to as "picking".
 However, the syntax above has several drawbacks:
 
- 1. `o`, `p1` and `p2` all must be repeated. This makes the construct is wordy and prone to typos.
+ 1. `o`, `p1` and `p2` all must be repeated. This makes the construct wordy and prone to typos.
 
  1. The JS interpreter might have to retrieve `o` twice, a potential efficiency concern.
 
@@ -43,18 +43,16 @@ However, the syntax above has several drawbacks:
 ### Underscore and other libraries
 
 Underscore and other utility libraries have validated the importance of property arithmetic with APIs such as `_.pick`.
-We will not discuss it further other than to say it does requires providing quoted property names,
+We will not discuss it further other than to say it requires providing quoted property names,
 cannot rename properteis as they are picked,
 cannot specify defaults,
 and cannot pick deeply.
 Underscore also supports `_.omit` which is kind of an inverse `_.pick`,
 which suffers from the same shortcomings.
 Underscore offers other property-related APIs include `_.matcher`, to check property existence.
-
 Other libraries have also acknolwedged the importance of pick-like operations.
-For instance, Ember has `Ember.Object#getProperties`.
 
-### Picking with destructuring assignment
+### Picking into variables with destructuring assignment
 
 ES6 does support picking-related functionality in the form of destructuring assignment.
 We write
@@ -85,7 +83,7 @@ This proposal is motivated by the desire to write such operations in a way that 
 
 ## Basics
 
-Our proposed solution to the motivations above is based on a new operator, the pick operator.
+Our proposed solution to the motivations above is based on a new operator, the pick operator (`#`).
 A primary use of the pick operator is to pick properties from an object into an object.
 
     { p1, p2 } # o
@@ -107,7 +105,7 @@ We use the `=` syntax to provide default values in case the `p1` property is mis
 
 ### Existential handling
 
-The pick operator is defined to return undefined when picking against a non-object, so that either
+The pick operator is defined to return undefined when picking against a non-object, so that
 
     { p1 } # 0
 
@@ -144,15 +142,7 @@ With a default value, to be parseable, this requires writing
 We can pick a property into a variable,
 using a "pick assignment":
 
-    a #= o;               // let a = o.a; or let {a} = o;
-
-Similarly to picking into a variable, to support default values, we need
-
-    (a = 42) #= o;
-
-or to declare at the same time
-
-    var (a = 42) #= o;
+    a #= o;               // a = o.a; or {a} = o;
 
 We can pick multiple values with the "variable picklist" described below:
 
@@ -163,7 +153,7 @@ We can pick multiple values with the "variable picklist" described below:
 
 The basic form of a "pick" is
 
-    picker #[=] object
+    picker # object
 
 In this section, we describe the basic form of the left hand side, the picker.
 A picker is one of a simple picker, an object picklist or a variable picklist.
@@ -173,7 +163,7 @@ An alternative "array" picker is described in the extensions section of this doc
 
 A **simple picker** has the following syntax.
 
-    key[modifier] [= default]
+    key[modifier] [: renamer] [= default]
 
 This results in a value calculated as the value of the property given by `key` taken from the right-hand object,
 with the default value applied if the key is missing or the object is defective.
@@ -251,9 +241,10 @@ We can rename properties based on an expression using the following syntax:
     { p: [newname] } # o    // { [newname]: o.p }
 
 We can rename properties, including multiple ones, by giving a function following the colon.
-The function is invoked with the property name, and must return a string.
+The function is invoked with the property name (and object),
+and must return a string.
 
-    { /^p/: p => p.replace('p', 'q' } # { p1: 1, p2: 2 }   // { q1: 1, q2: 2 }
+    { /^p/: [p => p.replace('p', 'q'] } # { p1: 1, p2: 2 }   // { q1: 1, q2: 2 }
 
 
 ### Mandatory and disallowed picking
@@ -416,9 +407,7 @@ We can give defaults and do renaming.
 | #        | pick     |
 | #=       | pick assignment |
 | @        | array pick |
-| ?@       | maybe array pick |
 | @=       | array pick assignment |
-| -------- | -------- |
 
 ### Pickers
 
@@ -431,7 +420,7 @@ We can give defaults and do renaming.
 | a = 42   | picker with default | pick property `a` with default |
 | b: a     | picker with rename | pick property `b` and rename to `a` |
 | b: a = 42 | picker with rename and default | pick property `b` and rename to `a`, defaulting to 42 |
-| b: fn    | picker with functional rename | pick property `b` and rename with result of calling fn |
+| b: [fn]  | picker with functional rename | pick property `b` and rename with result of calling fn |
 | b: [a]    | picker with computed rename | pick property `b` and rename with value of `a` |
 | /regexp/ | regexp picker | pick properties matching regexp |
 | fn       | filter picker | pick properties passing filter |
@@ -440,7 +429,6 @@ We can give defaults and do renaming.
 | { a, b } | object picklist | pick into object |
 | [ a, b ] | array picklist | pick into arary |
 | ( a, b ) | variable picklist | pick into variables (assignment only), or pick multiple properties in a subpicker |
-| -------- | -------- | -------|
 
 ## Revision History
 
@@ -448,4 +436,3 @@ We can give defaults and do renaming.
 |:-------- |:---- |:------- |
 | 0.1      | 2015-06-20 | Change rename to use `:`. Remove "this pickers". Change maybe pick to `?#`. |
 | 0.2      | 2016-02-04 | Remove maybe picking. Move arrays to later section. |
-| -------- | -------- | -------|

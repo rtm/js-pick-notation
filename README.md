@@ -1,17 +1,20 @@
+# JavaScript "pick" (`#`) operator
+
 This repo provides information and prototypes for the proposed JavaScript pick operator.
 
-See `js-pick-operator.js` for the proposal.
+See `js-pick-operator.md` for the proposal.
 
 To test:
 
 1. Clone this repo.
-2. Create a JS file such as test.sjs (note extension).
+2. Create a JS file such as `test.sjs` (note extension).
 3. Compile it with `make test.js`.
 4. Run it with `babel-node test.js`.
 
 ### Examples
 
-The file `foo.js` contains some very basic examples and tests, including the following:
+The file `foo.sjs` contains some very basic examples and tests, including the following.
+You can run it with `babel-node foo.js`.
 
 Assuming
 
@@ -38,7 +41,7 @@ Assuming
 
 #### Assignment pick
 
-    a         #= o   // assigns o.a to variable a
+    a          #= o  // assigns o.a to variable a
 
 ### Implementation details
 
