@@ -23,7 +23,7 @@ Support defaults and renaming:
 
 Some meaningful portion of JS written today is concerned with manipulating and extracting properties from objects.
 
-The representative case is to create an object with two properties from another object.
+The representative case is to create an object with properties from another object.
 Today we would write this as:
 
     { p1: o.p1, p2: o.p2 }
@@ -52,7 +52,7 @@ which suffers from the same shortcomings.
 Underscore offers other property-related APIs include `_.matcher`, to check property existence.
 Other libraries have also acknolwedged the importance of pick-like operations.
 
-### Picking into variables with destructuring assignment
+### But don't we already have destructuring?
 
 ES6 does support picking-related functionality in the form of destructuring assignment.
 We write
@@ -75,7 +75,7 @@ Using parameter destructuring, but this seems more trouble than it's worth,
 and the properties must still be written out twice.
 
 
-### Summary
+### Summary of Motivation
 
 Common property arithmetric operations used in JS are currently overly wordy.
 This proposal is motivated by the desire to write such operations in a way that is more compact and readable.

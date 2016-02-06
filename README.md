@@ -7,6 +7,7 @@ See `js-pick-operator.md` for the proposal.
 To test:
 
 1. Clone this repo.
+1. `npm install`
 2. Create a JS file such as `test.sjs` (note extension).
 3. Compile it with `make test.js`.
 4. Run it with `babel-node test.js`.
@@ -50,4 +51,4 @@ Assuming
 
 ### Prerequisites
 
-    npm install -g sweetjs babel
+    npm install -g sweetjs babel faucet

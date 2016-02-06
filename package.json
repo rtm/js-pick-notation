@@ -1,0 +1,26 @@
+{
+  "name": "js-pick-operator",
+  "version": "1.0.0",
+  "description": "This repo provides information and prototypes for the proposed JavaScript pick operator.",
+  "main": "foo.js",
+  "scripts": {
+    "test": "make tests/tests.js; babel-node tests/tests.js | faucet"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rtm/js-pick-operator.git"
+  },
+  "author": "rtm",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rtm/js-pick-operator/issues"
+  },
+  "homepage": "https://github.com/rtm/js-pick-operator#readme",
+  "devDependencies": {
+    "sweet.js": "^0.7.4",
+    "tape": "^4.4.0"
+  },
+  "bin": {
+    "pick": ""
+  }
+}

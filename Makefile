@@ -1,3 +1,3 @@
 %.js: %.sjs
-	echo "import {pick, pickOne} from './runtime';" > $@
-	cat pick.sjs $< | sjs --stdin >> $@
+	@echo "import {pick, pickOne} from '..';" > $@
+	@cat lib/pick.sjs $< | sjs --stdin >> $@
