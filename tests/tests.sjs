@@ -96,3 +96,10 @@ test('mandatory rest operator', function(t) {
     {a, ... !} # o;
   });
 });
+
+test('pick assignment', function(t) {
+  t.plan(1);
+  var a;
+  a #= o;
+  t.equal(a, 1);
+});

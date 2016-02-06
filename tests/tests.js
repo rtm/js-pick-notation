@@ -113,3 +113,9 @@ test('mandatory rest operator', function (t$871) {
         ]);
     });
 });
+test('pick assignment', function (t$873) {
+    t$873.plan(1);
+    var a$874;
+    a$874 = pickOne(o$832, { p: 'a' });
+    t$873.equal(a$874, 1);
+});

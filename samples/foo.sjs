@@ -26,6 +26,6 @@ var regxp = /p/;
 console.log("Extract properties matching regexp /p/", {[regxp]} # o);
 
 console.log('\n===ASSIGNMENT PICK');
-var a;
+var a, b;
 a #= o;
 console.log("Assigned value is", a);
