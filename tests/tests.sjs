@@ -24,7 +24,7 @@ test('retrieve nested property', function(t) {
 test('retrieve property with computed name', function(t) {
   t.plan(1);
   var prop = 'a';
-  t.equal([prop] # o, 1);
+  t.equal(prop* # o, 1);
 });
 
 test('throw when retrieving mandatory property which does not exist', function (t) {
@@ -64,25 +64,25 @@ test('pick with default value', function(t) {
 test('pick properties from array of name', function(t) {
   t.plan(1);
   var props = ['a'];
-  t.deepEqual({[props]} # o, {a: 1});
+  t.deepEqual({props*} # o, {a: 1});
 });
 
 test('pick properties based on regexp', function(t) {
   t.plan(1);
   var regexp = /a/;
-  t.deepEqual({[regexp]} # o, {a: 1});
+  t.deepEqual({regexp*} # o, {a: 1});
 });
 
 test('pick properties based on object properties', function(t) {
   t.plan(1);
   var obj = {a: 1};
-  t.deepEqual({[obj]} # o, {a: 1});
+  t.deepEqual({obj*} # o, {a: 1});
 });
 
-test('invalid [value] in picklist throws', function(t) {
+test('invalid value* in picklist throws', function(t) {
   t.plan(1);
   var val = 22;
-  t.throws(function() { {[val]} # o; });
+  t.throws(function() { {val*} # o; });
 });
 
 test('rest operator picks up all props', function(t) {

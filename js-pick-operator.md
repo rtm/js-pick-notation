@@ -210,41 +210,41 @@ In object picklists and array picklists, we support an empty spread operator in 
 
 ### Computed pickers and other exotica
 
-To pick a property whose name is given by an expression, we borrow the computed property name syntax and write:
+To pick a property whose name is given by an expression, star the expression:
 
-    [propname] # o            // o[propname]
+    propname* # o            // o[propname]
 
 The computed property name can of course be an expression:
 
-    [propname.toLowerCase()] # o
+    propname.toLowerCase()* # o
 
-If the expression inside the `[]` evaluates to an array, it means all the names in the array:
+If the starred expression evaluates to an array, it means all the names in the array:
 
     propnames = [ 'p1', 'p2' ]
-    { [propnames] } # o       // { p1: o.p1, p2: o.p2 }
+    { propnames* } # o       // { p1: o.p1, p2: o.p2 }
 
-If the expression inside the `[]` evaluates to an object, its keys are used as the properties to be picked:
+If the starred expression evaluates to an object, its keys are used as the properties to be picked:
 
     propobj = { p1: 1, p2: 2 }
-    { [propobj] } # o         // { p1: o.p1, p2: o.p2 }
+    { propobj* } # o         // { p1: o.p1, p2: o.p2 }
 
 If the picker is a regular expression, it yields all matching property names:
 
-    { [/^p/] } # o             // { p1: o.p1, p2: o.p2 }
+    { /^p/* } # o             // { p1: o.p1, p2: o.p2 }
 
 A function given as a pickname acts as a filter on property names:
 
-    { [p => /2/.test(p)] } # o // { p2: o.p2 }
+    { (p => /2/.test(p))* } # o // { p2: o.p2 }
 
 We can rename properties based on an expression using the following syntax:
 
-    { p: [newname] } # o    // { [newname]: o.p }
+    { p: newname* } # o    // { [newname]: o.p }
 
 We can rename properties, including multiple ones, by giving a function following the colon.
 The function is invoked with the property name (and object),
 and must return a string.
 
-    { /^p/: [p => p.replace('p', 'q'] } # { p1: 1, p2: 2 }   // { q1: 1, q2: 2 }
+    { /^p/: (p => p.replace('p', 'q')* } # { p1: 1, p2: 2 }   // { q1: 1, q2: 2 }
 
 
 ### Mandatory and disallowed picking
@@ -416,12 +416,12 @@ We can give defaults and do renaming.
 | a        | simple picker | pick property `a` |
 | a!       | mandatory picker | pick property `a`, throw if missing |
 | a^       | disallow picker | throw if property `a` is present |
-| [a]      | computed picker | pick property with key given by value of `a` |
+| a*       | computed picker | pick property with key given by value of `a` |
 | a = 42   | picker with default | pick property `a` with default |
 | b: a     | picker with rename | pick property `b` and rename to `a` |
 | b: a = 42 | picker with rename and default | pick property `b` and rename to `a`, defaulting to 42 |
-| b: [fn]  | picker with functional rename | pick property `b` and rename with result of calling fn |
-| b: [a]    | picker with computed rename | pick property `b` and rename with value of `a` |
+| b: fn*   | picker with functional rename | pick property `b` and rename with result of calling fn |
+| b: a*    | picker with computed rename | pick property `b` and rename with value of `a` |
 | /regexp/ | regexp picker | pick properties matching regexp |
 | fn       | filter picker | pick properties passing filter |
 | ...      | spread picker | pick remaining properties/elements |
@@ -436,3 +436,4 @@ We can give defaults and do renaming.
 |:-------- |:---- |:------- |
 | 0.1      | 2015-06-20 | Change rename to use `:`. Remove "this pickers". Change maybe pick to `?#`. |
 | 0.2      | 2016-02-04 | Remove maybe picking. Move arrays to later section. |
+| 0.3      | 2016-02-08 | Change computed property syntax from brackets to asterisk. |
