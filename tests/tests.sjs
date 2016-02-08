@@ -82,7 +82,7 @@ test('pick properties based on object properties', function(t) {
 test('invalid value* in picklist throws', function(t) {
   t.plan(1);
   var val = 22;
-  t.throws(function() { {val*} # o; });
+  t.throws(function() { {val*} # null; });
 });
 
 test('rest operator picks up all props', function(t) {
@@ -108,3 +108,59 @@ test('pick from non-object should throw if #?', function(t) {
   t.plan(1);
   t.throws(function() { { a } #? 0 });
 });
+
+// PICK FROM OBJECT INTO ARRAY
+
+test('pick from object into array', function(t) {
+  t.plan(1);
+  t.deepEqual([a] # o, [1]);
+});
+
+test('pick rest from object into array', function(t) {
+  t.plan(1);
+  t.equal(([...] # o).length, 1);
+});
+
+test('pick from object into array with rename', function(t) {
+  t.plan(1);
+  // This will create an array of the form `[undefined, 1]`.
+  t.equal(([a:1] # o).length, 2);
+});
+
+// PICK FROM ARRAY INTO VALUE
+
+// PICK FROM ARRAY INTO ARRAY
+test('pick from array into array', function(t) {
+  t.plan(1);
+  // This will create an array of the form `[undefined, 1]`.
+  t.deepEqual(
+    [1, 0] @ [1, 2],
+    [2, 1]
+  );
+});
+
+test('pick from array into array using negative index', function(t) {
+  t.plan(1);
+  t.deepEqual(
+    [-1, -2] @ [1, 2],
+    [2, 1]
+  );
+});
+
+test('pick from array into array using range', function(t) {
+  t.plan(1);
+  t.deepEqual(
+    [0 to 1] @ [1, 2],
+    [1, 2]
+  );
+});
+
+test('reverse array', function(t) {
+  t.plan(1);
+  t.deepEqual(
+    [-1 to 0] @ [1, 2, 3],
+    [3, 2, 1]
+  );
+});
+
+// // PICK FROM ARRAY INTO OBJECT
