@@ -1,1 +1,1 @@
-export {pick, pickOne} from './lib/runtime';
+export * from './lib/runtime';
