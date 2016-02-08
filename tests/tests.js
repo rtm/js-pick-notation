@@ -1,100 +1,106 @@
 import * as P from '..';
 import { test } from 'tape';
-var o$942 = { a: 1 };
+var o$970 = { a: 1 };
 // PICKING INTO VALUES
-test('retrieve named property as value', function (t$943) {
-    t$943.plan(2);
-    t$943.equal(P.pickVal(o$942, P.pick1('a')), 1);
-    t$943.equal(P.pickVal(o$942, P.pick1('a')), 1);
+test('retrieve named property as value', function (t$971) {
+    t$971.plan(2);
+    t$971.equal(P.pickVal(o$970, P.pick1('a')), 1);
+    t$971.equal(P.pickVal(o$970, P.pick1('a')), 1);
 });
-test('missing property yields undefined', function (t$946) {
-    t$946.plan(1);
-    t$946.equal(P.pickVal({}, P.pick1('b')), undefined);
+test('missing property yields undefined', function (t$974) {
+    t$974.plan(1);
+    t$974.equal(P.pickVal({}, P.pick1('b')), undefined);
 });
-test('retrieve nested property', function (t$948) {
-    t$948.plan(1);
-    t$948.equal(P.pickVal(P.pickVal({ b: o$942 }, P.pick1('b')), P.pick1('a')), 1);
+test('retrieve nested property', function (t$976) {
+    t$976.plan(1);
+    t$976.equal(P.pickVal(P.pickVal({ b: o$970 }, P.pick1('b')), P.pick1('a')), 1);
 });
-test('retrieve property with computed name', function (t$951) {
-    t$951.plan(1);
-    var prop$952 = 'a';
-    t$951.equal(P.pickVal(o$942, P.pick1(prop$952)), 1);
+test('retrieve property with computed name', function (t$979) {
+    t$979.plan(1);
+    var prop$980 = 'a';
+    t$979.equal(P.pickVal(o$970, P.pick1(prop$980)), 1);
 });
-test('throw when retrieving mandatory property which does not exist', function (t$954) {
-    t$954.plan(2);
-    t$954.throws(function () {
-        P.pickVal(o$942, P.mandatory(P.pick1('b')));
+test('throw when retrieving mandatory property which does not exist', function (t$982) {
+    t$982.plan(2);
+    t$982.throws(function () {
+        P.pickVal(o$970, P.mandatory(P.pick1('b')));
     });
-    t$954.throws(function () {
+    t$982.throws(function () {
         P.pickVal(0, P.mandatory(P.pick1('b')));
     });
 });
 // PICKING INTO OBJECTS
-test('pick property into object', function (t$957) {
-    t$957.plan(1);
-    t$957.deepEqual(P.pickObj(o$942, [P.pick1('a')]), o$942);
+test('pick property into object', function (t$985) {
+    t$985.plan(1);
+    t$985.deepEqual(P.pickObj(o$970, [P.pick1('a')]), o$970);
 });
-test('pick renamed property into object', function (t$959) {
-    t$959.plan(1);
-    t$959.deepEqual(P.pickObj(o$942, [P.rename(P.pick1('a'), 'b')]), { b: 1 });
+test('pick renamed property into object', function (t$987) {
+    t$987.plan(1);
+    t$987.deepEqual(P.pickObj(o$970, [P.rename(P.pick1('a'), 'b')]), { b: 1 });
 });
-test('pick missing mandatory property into object', function (t$961) {
-    t$961.plan(1);
-    t$961.throws(function () {
-        P.pickObj(o$942, [P.mandatory(P.pick1('b'))]);
+test('pick missing mandatory property into object', function (t$989) {
+    t$989.plan(1);
+    t$989.throws(function () {
+        P.pickObj(o$970, [P.mandatory(P.pick1('b'))]);
     });
 });
-test('pick must-not-exist property into object', function (t$963) {
-    t$963.plan(1);
-    t$963.throws(function () {
-        P.pickObj(o$942, [P.notexist(P.pick1('a'))]);
+test('pick must-not-exist property into object', function (t$991) {
+    t$991.plan(1);
+    t$991.throws(function () {
+        P.pickObj(o$970, [P.notexist(P.pick1('a'))]);
     });
 });
-test('pick with default value', function (t$965) {
-    t$965.plan(1);
-    t$965.deepEqual(P.pickObj(o$942, [P.deflt(P.pick1('b'), 42)]), { b: 42 });
+test('pick with default value', function (t$993) {
+    t$993.plan(1);
+    t$993.deepEqual(P.pickObj(o$970, [P.deflt(P.pick1('b'), 42)]), { b: 42 });
 });
-test('pick properties from array of name', function (t$967) {
-    t$967.plan(1);
-    var props$968 = ['a'];
-    t$967.deepEqual(P.pickObj(o$942, [P.pick1(props$968)]), { a: 1 });
+test('pick properties from array of name', function (t$995) {
+    t$995.plan(1);
+    var props$996 = ['a'];
+    t$995.deepEqual(P.pickObj(o$970, [P.pick1(props$996)]), { a: 1 });
 });
-test('pick properties based on regexp', function (t$970) {
-    t$970.plan(1);
-    var regexp$971 = /a/;
-    t$970.deepEqual(P.pickObj(o$942, [P.pick1(regexp$971)]), { a: 1 });
+test('pick properties based on regexp', function (t$998) {
+    t$998.plan(1);
+    var regexp$999 = /a/;
+    t$998.deepEqual(P.pickObj(o$970, [P.pick1(regexp$999)]), { a: 1 });
 });
-test('pick properties based on object properties', function (t$973) {
-    t$973.plan(1);
-    var obj$974 = { a: 1 };
-    t$973.deepEqual(P.pickObj(o$942, [P.pick1(obj$974)]), { a: 1 });
+test('pick properties based on object properties', function (t$1001) {
+    t$1001.plan(1);
+    var obj$1002 = { a: 1 };
+    t$1001.deepEqual(P.pickObj(o$970, [P.pick1(obj$1002)]), { a: 1 });
 });
-test('invalid [value] in picklist throws', function (t$976) {
-    t$976.plan(1);
-    var val$977 = 22;
-    t$976.throws(function () {
-        P.pickObj(o$942, [P.pick1(val$977)]);
+test('invalid [value] in picklist throws', function (t$1004) {
+    t$1004.plan(1);
+    var val$1005 = 22;
+    t$1004.throws(function () {
+        P.pickObj(o$970, [P.pick1(val$1005)]);
     });
 });
-test('rest operator picks up all props', function (t$979) {
-    t$979.plan(1);
-    t$979.deepEqual(P.pickObj(o$942, [
+test('rest operator picks up all props', function (t$1007) {
+    t$1007.plan(1);
+    t$1007.deepEqual(P.pickObj(o$970, [
         P.pick1('a'),
         P.rest()
-    ]), o$942);
+    ]), o$970);
 });
-test('mandatory rest operator', function (t$981) {
-    t$981.plan(1);
-    t$981.throws(function () {
-        P.pickObj(o$942, [
+test('mandatory rest operator', function (t$1009) {
+    t$1009.plan(1);
+    t$1009.throws(function () {
+        P.pickObj(o$970, [
             P.pick1('a'),
             P.mandatory(P.rest())
         ]);
     });
 });
-test('pick assignment', function (t$983) {
-    t$983.plan(1);
-    var a$984;
-    a$984 = P.pickVal(o$942, P.pick1('a'));
-    t$983.equal(a$984, 1);
+test('pick assignment', function (t$1011) {
+    t$1011.plan(1);
+    var a$1012;
+    a$1012 = P.pickVal(o$970, P.pick1('a'));
+    t$1011.equal(a$1012, 1);
+});
+test('pick from non-object should throw if #?', function (t$1015) {
+    t$1015.plan(1);
+    t$1015.throws(function () {
+        P.pickObj(P.check(0), [P.pick1('a')]);
+    });
 });

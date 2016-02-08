@@ -103,3 +103,8 @@ test('pick assignment', function(t) {
   a #= o;
   t.equal(a, 1);
 });
+
+test('pick from non-object should throw if #?', function(t) {
+  t.plan(1);
+  t.throws(function() { { a } #? 0 });
+});
