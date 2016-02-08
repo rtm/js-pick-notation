@@ -4,18 +4,23 @@ This repo provides information and prototypes for the proposed JavaScript pick o
 
 See `js-pick-operator.md` for the proposal.
 
-To test:
+### Installation
 
-1. Clone this repo.
-1. `npm install`
-2. Create a JS file such as `test.sjs` (note extension).
-3. Compile it with `make test.js`.
-4. Run it with `babel-node test.js`.
+    git clone https://github.com/rtm/js-pick-operator.git
+    cd js-pick-operator
+    npm install
 
-### Examples
+### Testing
 
-The file `foo.sjs` contains some very basic examples and tests, including the following.
-You can run it with `babel-node foo.js`.
+    npm test
+
+### Running your own
+
+ 2. Create a JS file such as `test.sjs` (note extension).
+ 3. Compile it with `make test.js`.
+ 4. Run it with `babel-node test.js`.
+
+### Summary
 
 Assuming
 
@@ -44,11 +49,16 @@ Assuming
 
     a          #= o  // assigns o.a to variable a
 
+#### Checked pick
+
+    a          #? o  // throws if `o` is not pickable
+
 ### Implementation details
 
-`pick.js` contains the sweet.js macro definitions.
-`runtime.js` contains the JS runtime, which is injected into the sweet output.
+`lib/pick.js` contains the sweet.js macro definitions.
+`lib/runtime.js` contains the JS runtime, which is injected into the sweet output.
+
 
 ### Prerequisites
 
-    npm install -g sweetjs babel faucet
+    npm install -g babel faucet
