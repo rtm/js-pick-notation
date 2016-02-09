@@ -54,7 +54,7 @@ Assuming
     a @[-1 to 0]     // reverse
     a @[0 to n]      // slice
 
-#### Guarded pick
+y#### Guarded pick
 
     o #? a            // throws if `o` is not pickable
 
