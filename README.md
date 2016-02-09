@@ -20,7 +20,7 @@ See `js-pick-operator.md` for the proposal.
  3. Compile it with `make test.js`.
  4. Run it with `babel-node test.js`.
 
-### Summary
+### Examples
 
 Assuming
 
@@ -31,7 +31,7 @@ Assuming
     o #a           // retrieve value of property 'a' from o
     o #(a)         // retrieve value of property given by `a` from o
     o #nested # v  // retrieve a nested property
-    o @x!          // retrieve a mandatory property (throws)
+    o #x!          // retrieve a mandatory property (throws)
 
 #### Picking into an object
 
@@ -51,10 +51,10 @@ Assuming
     o #[...]         // [o.a, o.b, ...]
 
     a #[1, 0]        // swap
-    a @[-1 to 0]     // reverse
-    a @[0 to n]      // slice
+    a #[-1 to 0]     // reverse
+    a #[0 to n]      // slice
 
-y#### Guarded pick
+#### Guarded pick
 
     o #? a            // throws if `o` is not pickable
 
