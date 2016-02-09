@@ -26,45 +26,43 @@ Assuming
 
     var o = { a: 1, p: 22, nested: { v: 'v' } };
 
-#### Picking from an object into a value
+#### Picking into a value
 
-    a          # o   // retrieve value of property 'a' from o
-    (p)        # o   // retrieve value of property given by `p` from o
-    b          # o   // retrieve a non-existent property from `o`
-    v # nested # o   // retrieve a nested property
-    x!         # o   // retrieve a mandatory property (throws)
+    o #a           // retrieve value of property 'a' from o
+    o #(a)         // retrieve value of property given by `a` from o
+    o #nested # v  // retrieve a nested property
+    o @x!          // retrieve a mandatory property (throws)
 
-#### Picking from an object into an object
+#### Picking into an object
 
-    {a}        # o   // retrieve property 'a'
-    {a, b}     # o   // retrieve existing property and non-existing property
-    {a, b!}    # o   // retrieve mandatory property (throws)
-    {a^}       # o   // retrieve property which must not exist (throws)
-    {a: foo}   # o   // retrieve property and rename
-    {b = 42}   # o   // retrieve property with default
-    {(keys)}   # o   // retrieve properties given in array
-    {/p/}      # o   // retrieve properties matching regexp
-    {a~, ...}  # o   // omit `a`
+    o #{a}           // retrieve property 'a'
+    o #{a, b}        // retrieve existing property and non-existing property
+    o #{a, b!}       // retrieve mandatory property (throws)
+    o #{a^}          // retrieve property which must not exist (throws)
+    o #{a: foo}      // retrieve property and rename
+    o #{b = 42}      // retrieve property with default
+    o #{(keys)}      // retrieve properties given in array
+    o #{/p/}         // retrieve properties matching regexp
+    o #{a~, ...}     // omit `a`
 
-#### Picking from an object into an array
+#### Picking into an array
 
-    [a]        # o   // [o.a]
-    [...]      # o   // [o.a, o.b, ...]
+    o #[a]           // [o.a]
+    o #[...]         // [o.a, o.b, ...]
 
-#### Picking from an object into a variable
-
-    a          #= o  // assigns o.a to variable a
+    a #[1, 0]        // swap
+    a @[-1 to 0]     // reverse
+    a @[0 to n]      // slice
 
 #### Guarded pick
 
-    a          #? o  // throws if `o` is not pickable
+    o #? a            // throws if `o` is not pickable
 
-#### Picking from an array into an array
 
-    [1, 0]     @ [1, 2]   // swap
-    [0:1, 1:0] @ [1, 2]   // swap
-    [-1 to 0]  @ a        // reverse
-    [0 to n]   @ a        // slice
+#### Creating a stored pick
+
+    var pick = #{a, b};          // use unary # to create stored pick
+    var picked = pick(o);        // apply pick by calling it on object
 
 ### Implementation details
 
