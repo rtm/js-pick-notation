@@ -24,13 +24,13 @@ test('retrieve nested property', function(t) {
 test('retrieve property with computed name', function(t) {
   t.plan(1);
   var prop = 'a';
-  t.equal(prop* # o, 1);
+  t.deepEqual({(prop)} # o, o);
 });
 
 test('throw when retrieving mandatory property which does not exist', function (t) {
   t.plan(2);
   t.throws(function() { b! # o; });
-  t.throws(function() { b! # 0; });
+  t.throws(function() { b! # null; });
 });
 
 
@@ -64,25 +64,25 @@ test('pick with default value', function(t) {
 test('pick properties from array of name', function(t) {
   t.plan(1);
   var props = ['a'];
-  t.deepEqual({props*} # o, {a: 1});
+  t.deepEqual({(props)} # o, {a: 1});
 });
 
 test('pick properties based on regexp', function(t) {
   t.plan(1);
   var regexp = /a/;
-  t.deepEqual({regexp*} # o, {a: 1});
+  t.deepEqual({(regexp)} # o, {a: 1});
 });
 
 test('pick properties based on object properties', function(t) {
   t.plan(1);
   var obj = {a: 1};
-  t.deepEqual({obj*} # o, {a: 1});
+  t.deepEqual({(obj)} # o, {a: 1});
 });
 
 test('invalid value* in picklist throws', function(t) {
   t.plan(1);
   var val = 22;
-  t.throws(function() { {val*} # null; });
+  t.throws(function() { {(val)} # null; });
 });
 
 test('rest operator picks up all props', function(t) {
@@ -125,6 +125,11 @@ test('pick from object into array with rename', function(t) {
   t.plan(1);
   // This will create an array of the form `[undefined, 1]`.
   t.equal(([a:1] # o).length, 2);
+});
+
+test('renaming function: uppercase property names', function(t) {
+  t.plan(1);
+  t.deepEqual({...: (p => p.toUpperCase())} # o, {A: 1});
 });
 
 // PICK FROM ARRAY INTO VALUE

@@ -42,8 +42,9 @@ Assuming
     {a^}       # o   // retrieve property which must not exist (throws)
     {a: foo}   # o   // retrieve property and rename
     {b = 42}   # o   // retrieve property with default
-    {['a']*}   # o   // retrieve properties given in array
+    {keys*}    # o   // retrieve properties given in array
     {/p/}      # o   // retrieve properties matching regexp
+    {a-, ...}  # o   // omit `a`
 
 #### Picking from an object into an array
 
@@ -61,7 +62,7 @@ Assuming
 #### Picking from an array into an array
 
     [1, 0]     @ [1, 2]   // swap
-    [0:1, 1:0] @ [1, 2]   //swap
+    [0:1, 1:0] @ [1, 2]   // swap
     [-1 to 0]  @ a        // reverse
     [0 to n]   @ a        // slice
 
@@ -73,4 +74,4 @@ Assuming
 
 ### Prerequisites
 
-    npm install -g babel faucet
+    npm install -g babel

@@ -1,14 +1,14 @@
 # The JavaScript "Pick"  Operator
 
 This document proposes a "pick" operator for JavaScript.
-In a nutshell, the pick operator allows deconstruction into objects, rather than variables.
+In a nutshell, the pick operator allows deconstruction into objects, rather than variables (although it also does more).
 It is represented by the sharp sign.
 
 This proposal does not offer new functionality.
 It is intended to allow common cases for object property manipulation to be written more succinctly.
 
 
-### Simple example
+### Real simple example
 
 Create an object containing the values of the `a` and `b` properties from object `o`:
 
@@ -43,7 +43,8 @@ However, the syntax above has several drawbacks:
 ### Underscore and other libraries
 
 Underscore and other utility libraries have validated the importance of property arithmetic with APIs such as `_.pick`.
-We will not discuss it further other than to say it requires providing quoted property names,
+We will not discuss this further other than to say it has the drawbacks that it
+requires providing quoted property names,
 cannot rename properteis as they are picked,
 cannot specify defaults,
 and cannot pick deeply.
@@ -77,7 +78,7 @@ and the properties must still be written out twice.
 
 ### Summary of Motivation
 
-Common property arithmetric operations used in JS are currently overly wordy.
+Common property arithmetic operations used in JS are currently overly wordy.
 This proposal is motivated by the desire to write such operations in a way that is more compact and readable.
 
 
@@ -92,7 +93,7 @@ This yields an object with the two properties `p1` and `p2` taken from `o`.
 
 ### Renaming
 
-We borrow some concepts used in restructuring assignments to provide renaming:
+We borrow some concepts used in restructuring assignments to provide renaming, using a colon:
 
     { p1: q1, p2 } # o   // {q1: o.p1, p2: o.p2 }
 
@@ -111,7 +112,7 @@ The pick operator is defined to return undefined when picking against a non-obje
 
 returns an empty object with no further ado.
 
-A mechanism described later is available to insist that we are picking from a proper object,
+Mechanisms described later are available to insist that we are picking from a proper object,
 or that the property exists.
 
 
@@ -120,7 +121,7 @@ or that the property exists.
 We can deep pick as follows.
 Assuming `o = { p1: 1, p2: { p21: 21, p22: 22 } }`, we could write
 
-    { p1, {p22} # p2 } # o
+    { p1, p22 # p2 } # o
 
 To maintain the structure of the original object while picking from subobjects we write:
 
@@ -137,6 +138,10 @@ With a default value, to be parseable, this requires writing
 
     (p = 42) # o
 
+Since `p` by itself would be a literal key, to provide the key in a variable or expression we write:
+
+   propname* # o
+
 ### Picking from objects into variables
 
 We can pick a property into a variable,
@@ -149,197 +154,165 @@ We can pick multiple values with the "variable picklist" described below:
     var (a, b) #= o;
 
 
-## Pickers
+## Syntax overview
 
-The basic form of a "pick" is
+### Picks
 
-    picker # object
+We call the entire syntactic construct a "pick".
+There are six forms:
 
-In this section, we describe the basic form of the left hand side, the picker.
-A picker is one of a simple picker, an object picklist or a variable picklist.
-An alternative "array" picker is described in the extensions section of this document.
+Picking from objects:
 
-### Simple pickers
+* Object pick into object (`{ picker, ... } # object`)
+* Object pick into array  (`[ picker, ... ] # object`)
+* Object pick into value  (`picker # object`)
 
-A **simple picker** has the following syntax.
+Picking from arrays:
+* Array pick into object (`{ picker, ... } @ array`)
+* Array pick into array  (`[ picker, ... ] @ array`)
+* Array pick into value  (`picker @ array`)
 
-    key[modifier] [: renamer] [= default]
+In addition, there are guarded forms of the pick,
+are represented by `#?` and `@?`.
 
-This results in a value calculated as the value of the property given by `key` taken from the right-hand object,
-with the default value applied if the key is missing or the object is defective.
-`modifier` is described below.
+There also assignment variants of picking into values:
 
-### Subpickers
+* Object pick assignment (`key #= object`)
+* Array pick assignment (`key @= object`)
 
-Another form of the simple picker is the **subpicker** mentioned above, which has the form
+`#` is called the **object pick operator**.
+`@` is called the **array pick operator**.
+Collectively, they are called **pick operators**.
 
-    picker # pick
+#### Picking into arrays
 
-which means to take the result of `pick`, and then pick from from it using `picker`.
+When picking into arrays, each element of the resulting array is
+taken from the corresponding element of the list of pickers, so
+
+    [a, b] @ {b:1, a:2} # yields [2, 1]
+
+We will build the definition of "picker" from the bottom up,
+starting with the notion of **key**..
+
+### Key
+
+A key, which is all you may need in many cases, is one of the following.
+
+    a    // literal key 'a'
+    'a'  // literal key 'a'
+
+Array picks use integral keys, with negative values counting from the end of the array.
+
+We can also specify a key or keys using a variable.
+To distinguish it from a literal key, make it an expression by enclosing it in parens:
+
+    (a)   // key given by evaluating `a`
+
+The expression could also evaluate to an array, object, regexp, or function.
+If an array, it means all the strings in the array as keys.
+If an object, it means all the keys in the object.
+If a regexp, it means all keys matching the regexp.
+If a function, it means all keys satisfying the predicate.
+
+It would be nice if we could use `[a]` for this,
+mimicking the syntax for computed property values,
+but stealing this array-like format prevents us from implementing some other desirable features.
+
+### Keyset
+
+Keys can be grouped using parentheses.
+This can be useful in order to apply picktypes, renamers, and defaults to all of them.
+A key by itself is also considered a keyset.
+
+#### Rest keyset
+
+In addition, there is the "rest" keyset, written as `...`.
+This refers to keys which haven't been mentioned yet.
+
+We can pick an object's values into an array with:
+
+    [ ... ] # object
+
+#### Ranges
+
+There is also a range keyset, useful in array arithmetic, which has the syntax `key to key`.
+
+For example, we can reverse an array with
+
+    [-1 to 0] @ a
+
+#### Picktypes
+
+A keyset can be suffixed with one or more picktypes.
+These are single characters which describe how the picking should be done:
+
+* `+`:   "must". The key(s) must be present).
+* `-`:   "omit". The keys are omitted.
+* `^`:   "must not" The key(s) must **not** be present.
+
+For instance:
+
+    { p!} # o                 // { p: o.p }; throws if p is missing
+
+The caret indicates that the key(s) *must not* exist.
+
+    (p, q^) # o               // { p: o.p }; throws if o.q is present
+
+Since picktypes can be applied to keysets,
+we can check that all desired keys,
+given as an array of strings, exist:
+
+    { (keys)! } # o
+
+or that no other keys exist:
+
+    { a, ...^ } # o
+
+or that no key starts with `q`:
+
+    { /^q/^ } # o
+
+We can omit a single property by combining the `-` picktype with rest:
+
+    { a-, ... } # o
+
+
+### Picker
+
+A **picker** adds a renamer and/or a default to a keyset.
+
+    keyset [: newkey] [= default]
+
+This takes the value given by keyset from the RSH,
+but renames it to `newkey`, which is usually just a key.
+But it can also be starred to indicate a computed key or renaming function.
+When picking into arrays, the `newkey` is an integer index that says where in the array the value is to placed.
+
+The default value is an expression which is used if the key is missing or the object is defective.
+
+### Nested picker
+
+A picker may itself be a form of pick;
+this is called a "nested picker".
+
+    picker1 # picker2
+
+which means to take the result of picking from the RHS using `picker2`,
+then pick from that using `picker1`.
+
 This allows us to say
 
-    { a # b, c # d } # { b: { a: 1 }, d: { c: 2 } }      // { a: 1, c: 2 }
+    { a # b } # { b: { a: 1 } }      // { a : 1 }
 
-Subpickers can be any number of levels deep:
+Nexted pickers can be any number of levels deep:
 
     { a # b # c } # { c: { b: { a: 99 } } }              // { a: 99 }
 
-The picker on the left side of a subpicker can be a picklist,
+The picker on the left side of a subpicker can be multi-key (using keysets),
 to allow picking of multiple properties from an intermediate pick.
 
     { (a, b) # c } # { c: { a: 1, b: 2 } }               // { a : 1, b : 2 }
 
-
-### Picklists
-
-A picklist is one of the following.
-
- 1. an object-like construct containing pickers (**object picklist**), used to pick properties into an object
-
- 1. a parenthesized list of pickers, used in assignments (**variable picklist**), used to pick properties into variables, or pick multiple properties in a subpicker
-
-In addition, an "array picklist" is described in the extensions sections at the bottom of the document.
-
-
-### Spreads in picklists
-
-In object picklists and array picklists, we support an empty spread operator in the final position. It refers to "remaining" properties.
-
-    { a: x, ... } # o      // { x: o.a, p1: o.p1, p2: o.p2, ... }
-
-
-### Computed pickers and other exotica
-
-To pick a property whose name is given by an expression, star the expression:
-
-    propname* # o            // o[propname]
-
-The computed property name can of course be an expression:
-
-    propname.toLowerCase()* # o
-
-If the starred expression evaluates to an array, it means all the names in the array:
-
-    propnames = [ 'p1', 'p2' ]
-    { propnames* } # o       // { p1: o.p1, p2: o.p2 }
-
-If the starred expression evaluates to an object, its keys are used as the properties to be picked:
-
-    propobj = { p1: 1, p2: 2 }
-    { propobj* } # o         // { p1: o.p1, p2: o.p2 }
-
-If the picker is a regular expression, it yields all matching property names:
-
-    { /^p/* } # o             // { p1: o.p1, p2: o.p2 }
-
-A function given as a pickname acts as a filter on property names:
-
-    { (p => /2/.test(p))* } # o // { p2: o.p2 }
-
-We can rename properties based on an expression using the following syntax:
-
-    { p: newname* } # o    // { [newname]: o.p }
-
-We can rename properties, including multiple ones, by giving a function following the colon.
-The function is invoked with the property name (and object),
-and must return a string.
-
-    { /^p/: (p => p.replace('p', 'q')* } # { p1: 1, p2: 2 }   // { q1: 1, q2: 2 }
-
-
-### Mandatory and disallowed picking
-
-We use the exclamation mark to indicate that a key specified in a picker *must* exist,
-otherwise a ReferenceError is thrown.
-
-    p! # o                    // { p: o.p }; throws if p is missing
-
-The mandatory operator and a default specifier are mutually exclusive.
-
-
-We use the caret to indicate that a key specified in a picker *must not* exist.
-
-    (p, q^) # o               // { p: o.p }; throws if o.q is present
-
-and can specify its default if desired, which will always be used.
-
-    (p, q^ = 99) # o               // { p: o.p, q: 99 }; throws if q is present
-
-We can check that all desired keys, given as an array of strings, exist:
-
-    { [keys]! } # o
-
-and to add a check that no other keys exist:
-
-    { [keys]!, ...^ } # o
-
-Check that no key starts with `q`:
-
-    { [/^q/]^ } # o
-
-
-## Pick assignment
-
-Picking has an obvious relationship to deconstructing assignments, of the form
-
-    { p } = o;
-
-To generalize and enhance deconstruction, we propose a **pick assignment operator** `#=`, as in
-
-    p #= o;                     // p = o.p;, or { p } = o
-
-Multiple pickers (target variables) can be specified by providing a parenthesized list called a **variable picklist**:
-
-    ( p1, p2 ) #= o;            // p1 = o.p1; p2 = o.p2; or, { p1, p2 } = o;
-
-or to also declare the variables:
-
-    let ( p1, p2 ) #= o;        // let p1 = o.p1, p2 = o.p2; or, let { p1, p2 } = o;
-
-Like all pickers, the picker on the left side of `#=` could include defaults and renamers, so
-
-    (p: x = 42) #= o;
-
-means to find the `p` property in `o`, or use 42 if it is not present, and assign the result to `x`.
-
-The left hand operand of the pick assignment operator must be a simple picker, or a variable picklist.
-It is meaningless to assign to an array or object.
-
-      p   #= o   // assign o.p to variable p
-    ( p ) #= o   // same as above
-    { p } #= o   // syntax error
-    [ p ] #= o   // syntax error
-
-
-## Extensions
-
-### Array extensions
-
-The picking notion can optionally be extended to work with arrays.
-
-#### Picking from objects into arrays
-
-We might want to pick one or more properties into an array:
-
-    [ p1, p2 ] # o        // [ o.p1, o.p2 ]
-
-#### Picking from arrays
-
-We might want to pick from an array instead of an object using an **array pick** operator,
-for which we could use `@`:
-
-    { a, b } @ [ 1, 2 ]  // { a: 1, b: 2 }
-
-### Array picklists
-
-The notion of picklist is extended to include **array picklist**", an array-like construct containing pickers.
-
-
-## Picking from arrays: the array pick operator
-
-To pick from arrays, we introduce the **array pick operator** `@`, analogous to `#`:
-
-    { a, b } @ array      // { a: array[0], b: array[1] }
 
 A single picker is the equivalent of `head`:
 
@@ -372,63 +345,33 @@ The power of this syntax is demonstrated by this example. Given an array of sort
 
 ### Picking from arguments
 
-Currently function arguments can be deconstructed as follows:
+For future consideration.
 
-    function f({ a }) { }
+## BNF Syntax
 
-The equivalent using pick notation is to use the pick (or array pick) operator,
-with *no right operand*.
-The right operand is implicitly the argument in that position in the argument list, so
+In the below, `identifier`, `stringLiteral`, and `expression` have their JS meanings.
 
-    function f(a #) { }
-    f({a: 1})
+```
+# Keys
+<key>                ::= identifier | expression
+<keyset>             ::= (<key>, ...) | "..." | <key> "to" <key>
+<picktype>           ::= "+" | "-" | "^"
+<typedKeyset>        ::= <keyset> [<picktype>...]
+<picker>             ::= <typedKeyset> [":" <newname>] ["=" <default>]
 
-corresponds to the above. Similarly, we can deconstruct array arguments with
+# Pickers
+<objectPicker>       ::= { <picker>, ... }
+<arrayPicker>        ::= [ <picker>, ... ]
+<valuePicker>        ::= <picker>
+<picker>             ::= <objectPicker> | <arrayPicker> | <valuePicker>
 
-    function f((a, b) @) { }
-    f([1, 2])
+# Pick operators
+<objectPickOperator> ::= "#" | "#?"
+<arrayPickOperator>  ::= "@" | "@?"
+<pickOperator>       ::= <objectPickOperator> | <arrayPickOperator>
 
-or pick out nested properties:
-
-    function f(c # b #) { }
-    f({ b: { c: 1 } })
-
-We can give defaults and do renaming.
-
-    function f(c: x = 42 # b #) { }
-
-
-## Grammar
-
-### Operators
-
-| Operator | Meaning |
-|:-------- |:-------- |
-| #        | pick     |
-| #=       | pick assignment |
-| @        | array pick |
-| @=       | array pick assignment |
-
-### Pickers
-
-| Syntax   | Name | Meaning |
-|:-------- |:---- |:------- |
-| a        | simple picker | pick property `a` |
-| a!       | mandatory picker | pick property `a`, throw if missing |
-| a^       | disallow picker | throw if property `a` is present |
-| a*       | computed picker | pick property with key given by value of `a` |
-| a = 42   | picker with default | pick property `a` with default |
-| b: a     | picker with rename | pick property `b` and rename to `a` |
-| b: a = 42 | picker with rename and default | pick property `b` and rename to `a`, defaulting to 42 |
-| b: fn*   | picker with functional rename | pick property `b` and rename with result of calling fn |
-| b: a*    | picker with computed rename | pick property `b` and rename with value of `a` |
-| /regexp/ | regexp picker | pick properties matching regexp |
-| fn       | filter picker | pick properties passing filter |
-| ...      | spread picker | pick remaining properties/elements |
-| a # b    | subpicker     | pick `a` from the result of picking `b` |
-| { a, b } | object picklist | pick into object |
-| [ a, b ] | array picklist | pick into arary |
-| ( a, b ) | variable picklist | pick into variables (assignment only), or pick multiple properties in a subpicker |
+<pick>               ::= picker <pickOperator> expression
+```
 
 ## Revision History
 
@@ -437,3 +380,4 @@ We can give defaults and do renaming.
 | 0.1      | 2015-06-20 | Change rename to use `:`. Remove "this pickers". Change maybe pick to `?#`. |
 | 0.2      | 2016-02-04 | Remove maybe picking. Move arrays to later section. |
 | 0.3      | 2016-02-08 | Change computed property syntax from brackets to asterisk. |
+| 0.4      | 2016-02-09 | Complete rewrite for organization and clarity. |
