@@ -45,7 +45,7 @@ However, the syntax above has several drawbacks:
 Underscore and other utility libraries have validated the importance of property arithmetic with APIs such as `_.pick`.
 We will not discuss this further other than to say it has the drawbacks that it
 requires providing quoted property names,
-cannot rename properteis as they are picked,
+cannot rename properties as they are picked,
 cannot specify defaults,
 and cannot pick deeply.
 Underscore also supports `_.omit` which is kind of an inverse `_.pick`,
@@ -68,17 +68,9 @@ If I want to create an object with properties `p1` and `p2` from another object,
 
 This gives us defaults, renaming, and deep picking, but the property names must still be written out twice.
 
-We could write
-
-    (({p1, p2}) => ({p1, p2}))(o)
-
-Using parameter destructuring, but this seems more trouble than it's worth,
-and the properties must still be written out twice.
-
-
 ### Summary of Motivation
 
-Common property arithmetic operations used in JS are currently overly wordy.
+> Common property arithmetic operations used in JS are currently overly wordy.
 This proposal is motivated by the desire to write such operations in a way that is more compact and readable.
 
 
@@ -108,7 +100,7 @@ We use the `=` syntax to provide default values in case the `p1` property is mis
 
 The pick operator is defined to return undefined when picking against a non-object, so that
 
-    { p1 } # 0
+    { p1 } # null
 
 returns an empty object with no further ado.
 
@@ -140,7 +132,7 @@ With a default value, to be parseable, this requires writing
 
 Since `p` by itself would be a literal key, to provide the key in a variable or expression we write:
 
-   propname* # o
+   (propname) # o
 
 ### Picking from objects into variables
 
@@ -151,7 +143,7 @@ using a "pick assignment":
 
 We can pick multiple values with the "variable picklist" described below:
 
-    var (a, b) #= o;
+    let <a, b> #= o;
 
 
 ## Syntax overview
@@ -159,7 +151,7 @@ We can pick multiple values with the "variable picklist" described below:
 ### Picks
 
 We call the entire syntactic construct a "pick".
-There are six forms:
+There are six basic forms:
 
 Picking from objects:
 
@@ -175,7 +167,7 @@ Picking from arrays:
 In addition, there are guarded forms of the pick,
 are represented by `#?` and `@?`.
 
-There also assignment variants of picking into values:
+There also are assignment variants of picking into values:
 
 * Object pick assignment (`key #= object`)
 * Array pick assignment (`key @= object`)
@@ -191,7 +183,7 @@ taken from the corresponding element of the list of pickers, so
 
     [a, b] @ {b:1, a:2} # yields [2, 1]
 
-We will build the definition of "picker" from the bottom up,
+We will now build the definition of "picker" from the bottom up,
 starting with the notion of **key**..
 
 ### Key
@@ -201,7 +193,8 @@ A key, which is all you may need in many cases, is one of the following.
     a    // literal key 'a'
     'a'  // literal key 'a'
 
-Array picks use integral keys, with negative values counting from the end of the array.
+Array picks (remember, we use this term to refer to picking **from** arrays)
+use integral keys, with negative values counting from the end of the array.
 
 We can also specify a key or keys using a variable.
 To distinguish it from a literal key, make it an expression by enclosing it in parens:
@@ -220,16 +213,20 @@ but stealing this array-like format prevents us from implementing some other des
 
 ### Keyset
 
-Keys can be grouped using parentheses.
+Keys can be grouped using angle brackets.
 This can be useful in order to apply picktypes, renamers, and defaults to all of them.
 A key by itself is also considered a keyset.
+
+Example making both `a` and `b` "must" properties:
+
+    {<a, b>!} # o
 
 #### Rest keyset
 
 In addition, there is the "rest" keyset, written as `...`.
 This refers to keys which haven't been mentioned yet.
 
-We can pick an object's values into an array with:
+For example, we can pick an object's values into an array with:
 
     [ ... ] # object
 
@@ -243,16 +240,18 @@ For example, we can reverse an array with
 
 #### Picktypes
 
-A keyset can be suffixed with one or more picktypes.
+A keyset can be suffixed with one or more **picktypes**.
 These are single characters which describe how the picking should be done:
 
-* `+`:   "must". The key(s) must be present).
-* `-`:   "omit". The keys are omitted.
-* `^`:   "must not" The key(s) must **not** be present.
+| Picktype  | Name | Description |
+| ------------- | ------------- | ----------- |
+| `!`  | must  | key must be present |
+| `~`  | omit  | key is to be omitted |
+| `^`  | mustnot  | key must not be present |
 
 For instance:
 
-    { p!} # o                 // { p: o.p }; throws if p is missing
+    { p! } # o                // { p: o.p }; throws if p is missing
 
 The caret indicates that the key(s) *must not* exist.
 
@@ -264,17 +263,18 @@ given as an array of strings, exist:
 
     { (keys)! } # o
 
-or that no other keys exist:
+or that no other keys than `a` exist:
 
     { a, ...^ } # o
 
-or that no key starts with `q`:
+or that no key starts with `q`, or that at least one key does:
 
     { /^q/^ } # o
+    { /^q/! } # o
 
-We can omit a single property by combining the `-` picktype with rest:
+We can omit a single property by combining the `~` picktype with rest:
 
-    { a-, ... } # o
+    { a~, ... } # o
 
 
 ### Picker
@@ -283,12 +283,13 @@ A **picker** adds a renamer and/or a default to a keyset.
 
     keyset [: newkey] [= default]
 
-This takes the value given by keyset from the RSH,
+This takes the value given by keyset from the RHS,
 but renames it to `newkey`, which is usually just a key.
-But it can also be starred to indicate a computed key or renaming function.
+But it can also be an expression evaluating to a key, or a functi providing a renaming rule.
 When picking into arrays, the `newkey` is an integer index that says where in the array the value is to placed.
 
-The default value is an expression which is used if the key is missing or the object is defective.
+The **default** is an expression which is used if the key is missing or the object is defective.
+The special syntax `:= default` is used to provide a function to provide a default rule.
 
 ### Nested picker
 
@@ -311,36 +312,7 @@ Nexted pickers can be any number of levels deep:
 The picker on the left side of a subpicker can be multi-key (using keysets),
 to allow picking of multiple properties from an intermediate pick.
 
-    { (a, b) # c } # { c: { a: 1, b: 2 } }               // { a : 1, b : 2 }
-
-
-A single picker is the equivalent of `head`:
-
-    a @ array
-
-When picking from arrays, when the LHS is a picklist,
-the order of pickers corresponds to the order of elements in the array,
-with the normal convention of being able to elide elements:
-
-    { a, , b } @ array    // { a: array[0], b: array[2] }
-
-We can pick from an array onto an array:
-
-    [ 1, 0 ] @ array
-
-### Array pick assignment
-
-We can declare/assign using the **array pick assignment operator**, '@=':
-
-    let (a, b) @= array;
-
-The equivalent of today's `[a, b] = [b, a];` is
-
-    (a, b) @= [b, a];
-
-The power of this syntax is demonstrated by this example. Given an array of sort indexes, we can apply it using
-
-    [ indexes* ] @= array
+    { <a, b> # c } # { c: { a: 1, b: 2 } }               // { a : 1, b : 2 }
 
 
 ### Picking from arguments
@@ -354,14 +326,14 @@ In the below, `identifier`, `stringLiteral`, and `expression` have their JS mean
 ```
 # Keys
 <key>                ::= identifier | expression
-<keyset>             ::= (<key>, ...) | "..." | <key> "to" <key>
-<picktype>           ::= "+" | "-" | "^"
+<keyset>             ::= "<" <key>, ... ">" | "..." | <key> "to" <key> | <key>
+<picktype>           ::= "!" | "~" | "^"
 <typedKeyset>        ::= <keyset> [<picktype>...]
-<picker>             ::= <typedKeyset> [":" <newname>] ["=" <default>]
+<picker>             ::= <typedKeyset> [":" <newname>] [["!"] ["="] <default>]
 
 # Pickers
-<objectPicker>       ::= { <picker>, ... }
-<arrayPicker>        ::= [ <picker>, ... ]
+<objectPicker>       ::= "{" <picker>, ... "}"
+<arrayPicker>        ::= "[" <picker>, ... "]"
 <valuePicker>        ::= <picker>
 <picker>             ::= <objectPicker> | <arrayPicker> | <valuePicker>
 

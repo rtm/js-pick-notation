@@ -168,4 +168,28 @@ test('reverse array', function(t) {
   );
 });
 
+test('initialize array', function(t) {
+  t.plan(1);
+  t.deepEqual(
+    [0 to 2 := (x => x * x)] @ [],
+    [0, 1, 4]
+  );
+});
+
+test('tail of array by omitting first element', function(t) {
+  t.plan(1);
+  t.deepEqual(
+    [0~, ...] @ [1, 2],
+    [2]
+  );
+});
+
+test('splice array', function(t) {
+  t.plan(1);
+  t.deepEqual(
+    [1 to 2~, ...] @ [1, 2, 3, 4],
+    [1, 4]
+  );
+});
+
 // // PICK FROM ARRAY INTO OBJECT

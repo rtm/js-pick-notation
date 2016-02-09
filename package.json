@@ -4,7 +4,7 @@
   "description": "This repo provides information and prototypes for the proposed JavaScript pick operator.",
   "main": "index.js",
   "scripts": {
-    "test": "make tests/tests.js; babel-node tests/tests.js | node_modules/.bin/faucet"
+    "test": "make tests/tests.js; babel-node tests/tests.js | node_modules/.bin/tap-colorize --pass green"
   },
   "repository": {
     "type": "git",
@@ -13,7 +13,9 @@
   "author": "Bob Myers <rtm@gol.com>",
   "license": "MIT",
   "keywords": [
-      "es7", "javacript", "pick"
+    "es7",
+    "javacript",
+    "pick"
   ],
   "bugs": {
     "url": "https://github.com/rtm/js-pick-operator/issues"
@@ -22,6 +24,7 @@
   "devDependencies": {
     "faucet": "0.0.1",
     "sweet.js": "^0.7.4",
+    "tap-colorize": "^1.2.0",
     "tape": "^4.4.0"
   },
   "bin": {

@@ -29,7 +29,7 @@ Assuming
 #### Picking from an object into a value
 
     a          # o   // retrieve value of property 'a' from o
-    p*         # o   // retrieve value of property given by `p` from o
+    (p)        # o   // retrieve value of property given by `p` from o
     b          # o   // retrieve a non-existent property from `o`
     v # nested # o   // retrieve a nested property
     x!         # o   // retrieve a mandatory property (throws)
@@ -42,9 +42,9 @@ Assuming
     {a^}       # o   // retrieve property which must not exist (throws)
     {a: foo}   # o   // retrieve property and rename
     {b = 42}   # o   // retrieve property with default
-    {keys*}    # o   // retrieve properties given in array
+    {(keys)}   # o   // retrieve properties given in array
     {/p/}      # o   // retrieve properties matching regexp
-    {a-, ...}  # o   // omit `a`
+    {a~, ...}  # o   // omit `a`
 
 #### Picking from an object into an array
 
@@ -55,7 +55,7 @@ Assuming
 
     a          #= o  // assigns o.a to variable a
 
-#### Checked pick
+#### Guarded pick
 
     a          #? o  // throws if `o` is not pickable
 
