@@ -3,34 +3,54 @@ import test from 'tape';
 
 var o = {a: 1};
 
+var VALUE_TESTS = true;
+var OBJECT_TESTS = true;
+
 // PICKING INTO VALUES
 
-test('retrieve named property as value', function (t) {
+test('pick named property as value', {skip: !VALUE_TESTS}, function (t) {
   t.plan(2);
-  t.equal( a  # o, 1);
-  t.equal('a' # o, 1);
+  t.equal( o #a, 1);
+  t.equal(o #'a', 1);
 });
 
-test('missing property yields undefined', function(t) {
+test('pick missing property as value (yields undefined)', {skip: !VALUE_TESTS}, function(t) {
   t.plan(1);
-  t.equal(b # {}, undefined);
+  t.equal({} #b, undefined);
 });
 
-test('retrieve nested property', function(t) {
-  t.plan(1);
-  t.equal(a # b # {b: o}, 1);
-});
+// test.skip('retrieve nested property', function(t) {
+//   t.plan(1);
+//   t.equal(a # b # {b: o}, 1);
+// });
 
-test('retrieve property with computed name', function(t) {
+test('pick named property as value', {skip: !VALUE_TESTS}, function(t) {
   t.plan(1);
   var prop = 'a';
-  t.deepEqual({(prop)} # o, o);
+  t.equal(o #(prop), 1);
 });
 
-test('throw when retrieving mandatory property which does not exist', function (t) {
+test('pick mandatory missing property into value (throws)', {skip: !VALUE_TESTS}, function (t) {
   t.plan(2);
-  t.throws(function() { b! # o; });
-  t.throws(function() { b! # null; });
+  t.throws(function() { o    #b!; });
+  t.throws(function() { null #b!; });
+});
+
+test('pick missing property into value with default', {skip: !VALUE_TESTS}, function (t) {
+  t.plan(1);
+  t.equal(o #b=22, 22);
+});
+
+test('pick into value using pick function', {skip: !VALUE_TESTS}, function(t) {
+  t.plan(2);
+  var pickfunc = #a;
+  t.equal(typeof pickfunc, "function");
+  t.equal(pickfunc(o), 1);
+});
+
+test('renaming function: uppercase property names', function(t) {
+  t.plan(1);
+  t.deepEqual(o #{...: (p => p.toUpperCase())}, {A: 1});
 });
 
 
@@ -38,108 +58,96 @@ test('throw when retrieving mandatory property which does not exist', function (
 
 test('pick property into object', function(t) {
   t.plan(1);
-  t.deepEqual({a} # o, o);
+  t.deepEqual(o #{a}, o);
 });
 
 test('pick renamed property into object', function(t) {
   t.plan(1);
-  t.deepEqual({a:b} # o, {b: 1});
+  t.deepEqual(o #{a: b}, {b: 1});
 });
 
-test('pick missing mandatory property into object', function(t) {
+test('pick missing mandatory property into object (throws)', function(t) {
   t.plan(1);
-  t.throws(function() { {b!} # o; });
+  t.throws(function() { o # {b!}; });
 });
 
-test('pick must-not-exist property into object', function(t) {
+test('pick must-not-exist property into object (throws)', function(t) {
   t.plan(1);
-  t.throws(function() { {a^} # o; });
+  t.throws(function() { o #{a^}; });
 });
 
-test('pick with default value', function(t) {
+test('pick into object with default value', function(t) {
   t.plan(1);
-  t.deepEqual({b = 42} # o, {b: 42});
+  t.deepEqual(o #{b = 42}, {b: 42});
 });
 
-test('pick properties from array of name', function(t) {
+test('pick properties from array of name into object', function(t) {
   t.plan(1);
   var props = ['a'];
-  t.deepEqual({(props)} # o, {a: 1});
+  t.deepEqual(o #{(props)}, {a: 1});
 });
 
 test('pick properties based on regexp', function(t) {
   t.plan(1);
   var regexp = /a/;
-  t.deepEqual({(regexp)} # o, {a: 1});
+  t.deepEqual(o #{(regexp)}, {a: 1});
 });
 
 test('pick properties based on object properties', function(t) {
   t.plan(1);
   var obj = {a: 1};
-  t.deepEqual({(obj)} # o, {a: 1});
+  t.deepEqual(o #{(obj)}, {a: 1});
 });
 
-test('invalid value* in picklist throws', function(t) {
-  t.plan(1);
-  var val = 22;
-  t.throws(function() { {(val)} # null; });
-});
+// test.skip('invalid value* in picklist throws', function(t) {
+//   t.plan(1);
+//   var val = 22;
+//   t.throws(function() { {(val)} # null; });
+// });
 
 test('rest operator picks up all props', function(t) {
   t.plan(1);
-  t.deepEqual({a, ...} # o, o);
+  t.deepEqual(o #{a, ...}, o);
 });
 
-test('mandatory rest operator', function(t) {
+test('mandatory rest with no remaining properties (throws)', function(t) {
   t.plan(1);
   t.throws(function() {
-    {a, ... !} # o;
+    o # {a, ...!};
   });
-});
-
-test('pick assignment', function(t) {
-  t.plan(1);
-  var a;
-  a #= o;
-  t.equal(a, 1);
 });
 
 test('pick from non-object should throw if #?', function(t) {
   t.plan(1);
-  t.throws(function() { { a } #? 0 });
+  t.throws(function() { null #?{ a } });
 });
 
-// PICK FROM OBJECT INTO ARRAY
+// PICK INTO ARRAY
 
-test('pick from object into array', function(t) {
+test('pick from property into array', function(t) {
   t.plan(1);
-  t.deepEqual([a] # o, [1]);
+  t.deepEqual(o #[a], [1]);
 });
 
 test('pick rest from object into array', function(t) {
   t.plan(1);
-  t.equal(([...] # o).length, 1);
+  t.equal((o #[...]).length, 1);
 });
 
 test('pick from object into array with rename', function(t) {
   t.plan(1);
   // This will create an array of the form `[undefined, 1]`.
-  t.equal(([a:1] # o).length, 2);
+  t.equal((o #[a: 1]).length, 2);
 });
 
-test('renaming function: uppercase property names', function(t) {
-  t.plan(1);
-  t.deepEqual({...: (p => p.toUpperCase())} # o, {A: 1});
-});
-
-// PICK FROM ARRAY INTO VALUE
 
 // PICK FROM ARRAY INTO ARRAY
-test('pick from array into array', function(t) {
+
+test('swap array elements', function(t) {
   t.plan(1);
   // This will create an array of the form `[undefined, 1]`.
   t.deepEqual(
-    [1, 0] @ [1, 2],
+    [1, 2] #[1, 0],
     [2, 1]
   );
 });
@@ -147,7 +155,7 @@ test('pick from array into array', function(t) {
 test('pick from array into array using negative index', function(t) {
   t.plan(1);
   t.deepEqual(
-    [-1, -2] @ [1, 2],
+    [1, 2] #[-1, -2],
     [2, 1]
   );
 });
@@ -155,7 +163,7 @@ test('pick from array into array using negative index', function(t) {
 test('pick from array into array using range', function(t) {
   t.plan(1);
   t.deepEqual(
-    [0 to 1] @ [1, 2],
+    [1, 2] #[0 ...1],
     [1, 2]
   );
 });
@@ -163,7 +171,7 @@ test('pick from array into array using range', function(t) {
 test('reverse array', function(t) {
   t.plan(1);
   t.deepEqual(
-    [-1 to 0] @ [1, 2, 3],
+    [1, 2, 3] #[-1 ...0],
     [3, 2, 1]
   );
 });
@@ -171,7 +179,7 @@ test('reverse array', function(t) {
 test('initialize array', function(t) {
   t.plan(1);
   t.deepEqual(
-    [0 to 2 := (x => x * x)] @ [],
+    [] #[0 ...2 := (x => x * x)],
     [0, 1, 4]
   );
 });
@@ -179,7 +187,7 @@ test('initialize array', function(t) {
 test('tail of array by omitting first element', function(t) {
   t.plan(1);
   t.deepEqual(
-    [0~, ...] @ [1, 2],
+    [1, 2] #[0~, ...],
     [2]
   );
 });
@@ -187,9 +195,7 @@ test('tail of array by omitting first element', function(t) {
 test('splice array', function(t) {
   t.plan(1);
   t.deepEqual(
-    [1 to 2~, ...] @ [1, 2, 3, 4],
+    [1, 2, 3, 4] #[1 ...2~, ...],
     [1, 4]
   );
 });
-
-// // PICK FROM ARRAY INTO OBJECT

@@ -215,11 +215,11 @@ For example, we can pick an object's values into an array with:
 
 #### Ranges
 
-There is also a range key, useful in array arithmetic, which has the syntax `key to key`.
+There is also a range key, useful in array arithmetic, which has the syntax `key...key`.
 
 For example, we can reverse an array with
 
-    a @-1 to 0
+    a #-1 ... 0
 
 #### Picktypes
 
@@ -298,6 +298,9 @@ Since picks are functions, they may be composed:
     var pickb = #b;
     {a: 1, b: 2} #{(picka), (pickb)}
 
+Subpickers can also be used to apply picktypes, defaults or renamers to multiple properties:
+
+    #{#{a, b}! : p => p+"prop"}
 
 ## BNF Syntax
 
@@ -306,7 +309,7 @@ In the below, `identifier` and `expression` have their JS meanings.
 ```
 # Keys
 <basicKey>           ::= <identifier> | <expression>
-<key>                ::= <key> | "..." | <key> "to" <key>
+<key>                ::= <key> | "..." | <key> "..." <key>
 <picktype>           ::= "!" | "~" | "^"
 <typedKey>           ::= <key> [<picktype>...]
 <picker>             ::= <typedKey> [":" <basicKey>] [["!"] ["="] <expression>]

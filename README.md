@@ -31,32 +31,32 @@ Assuming
     o #a           // retrieve value of property 'a' from o
     o #(a)         // retrieve value of property given by `a` from o
     o #nested # v  // retrieve a nested property
-    o #x!          // retrieve a mandatory property (throws)
+    o #x!          // retrieve a mandatory property (throws is missing))
 
 #### Picking into an object
 
-    o #{a}           // retrieve property 'a'
-    o #{a, b}        // retrieve existing property and non-existing property
-    o #{a, b!}       // retrieve mandatory property (throws)
-    o #{a^}          // retrieve property which must not exist (throws)
-    o #{a: foo}      // retrieve property and rename
-    o #{b = 42}      // retrieve property with default
-    o #{(keys)}      // retrieve properties given in array
-    o #{/p/}         // retrieve properties matching regexp
-    o #{a~, ...}     // omit `a`
+    o #{a}         // retrieve property 'a'
+    o #{a, b}      // retrieve existing property and non-existing property
+    o #{a, b!}     // retrieve mandatory property (throws)
+    o #{a^}        // retrieve property which must not exist (throws if present))
+    o #{a: foo}    // retrieve property and rename
+    o #{b = 42}    // retrieve property with default
+    o #{(keys)}    // retrieve properties given in array
+    o #{/p/}       // retrieve properties matching regexp
+    o #{a~, ...}   // omit `a`
 
 #### Picking into an array
 
-    o #[a]           // [o.a]
-    o #[...]         // [o.a, o.b, ...]
+    o #[a]         // [o.a]
+    o #[...]       // [o.a, o.b, ...]
 
-    a #[1, 0]        // swap
-    a #[-1 to 0]     // reverse
-    a #[0 to n]      // slice
+    a #[1, 0]      // swap
+    a #[-1 to 0]   // reverse
+    a #[0 to n]    // slice
 
 #### Guarded pick
 
-    o #? a            // throws if `o` is not pickable
+    o #? a         // throws if `o` is not pickable
 
 
 #### Creating a stored pick
