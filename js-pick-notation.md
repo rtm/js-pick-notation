@@ -1,25 +1,39 @@
-# The JavaScript "Pick"  Operator
+# JavaScript pick notation (extended dot notation)
 
-This document proposes a "pick" operator for JavaScript.
-In a nutshell, the pick operator allows deconstruction into objects,
-rather than variables
-(although it also does more).
-It is represented by the sharp sign **`#`**.
+### Executive summary
+
+This document proposes an extension to the JavaScript dot notation.
+Currently, dot notation only allows an identifier (in ES6 spec terminology, (*IdentifierName*) to follow the dot,
+meaning to retrieve the value of key with that name.
+
+This proposal extends the dot notation to allow curly-bracketed, square-bracketed, or parenthesized constructs
+following the dot, allowing properties to be extracted from the expression preceding the dot
+into another object, an array, or a value.
+
+The curly-bracketed or square-bracketed constructs function very similarly to the
+constructs used in destructuring assignment,
+and resemble the *AssignmentPattern*
+construct used in destructuring assignment (but with important extensions).
+This is not surprising, because this proposal is about a kind of destructuring,
+not into variables as with destructuring assignment,
+but into objects, arrays, and values.
 
 This proposal does not offer new functionality.
 It is intended to allow common cases for property access and manipulation to be written more succinctly.
+
+We also considered a new operator such as `#` instead of the extended dot.
+See the section below on this topic for pros and cons.
 
 
 ### Real simple example
 
 Create an object containing the values of the `a` and `b` properties from object `o`:
 
-    o2 = o1 #{a, b};          // o2 = {a: o1.a, b: o1.b}
+    o2 = o1.{a, b};          // o2 = {a: o1.a, b: o1.b}
 
 Support defaults and renaming:
 
-    o2 = o1 #{p1: q1 = d1};   // o2 = {q1: o.p1};
-
+    o2 = o1.{p1: q1 = d1};   // o2 = {q1: o.p1};
 
 ## Motivation
 
@@ -55,18 +69,18 @@ which suffers from the same shortcomings.
 Underscore offers other property-related APIs include `_.matcher`, to check property existence.
 Other libraries have also acknolwedged the importance of pick-like operations.
 
-### But don't we already have destructuring?
+### How is this different from destructuring?
 
 ES6 does support picking-related functionality in the form of destructuring assignment.
 We write
 
     let { p1, p2 } = o;
 
-The fundamental limitation of this feature is that **it is limited to picking into variables**.
+The fundamental limitation of this feature is that **it is limited to destructuring into variables**.
 If I want to create an object with properties `p1` and `p2` from another object, I must write
 
-    var { p1, p2 } = o;
-    var pickedObj = { p1, p2 };
+    let { p1, p2 } = o;
+    let pickedObj = { p1, p2 };
 
 This gives us defaults, renaming, and deep picking, but the property names must still be written out twice.
 
@@ -78,31 +92,38 @@ This proposal is motivated by the desire to write such operations in a way that 
 
 ## Basics
 
-Our proposed solution to the motivations above is based on a new operator, the pick operator (`#`).
-A primary use of the pick operator is to pick properties from an object into an object.
+Our proposed solution to the motivations above is to extend the dot notation,
+to take, on its right-hand side, a curly-bracketed construct which
+specifies the properties to take from the object.
 
-    o #{ p1, p2 }
+    o.{p1, p2}
 
 This yields an object with the two properties `p1` and `p2` taken from `o`.
 
+The right-hand side may also be a square-bracketed construct (which results in an array),
+or a parenthesized construct (which results in a value).
+
 ### Renaming
 
-We borrow some concepts used in restructuring assignments to provide renaming, using a colon:
+The syntax used in destructuring assignments
+to specify new property names with colons (*DestructuringAssignmentTarget*) is unchanged.
 
-    o #{ p1: q1, p2 }   // {q1: o.p1, p2: o.p2 }
+    o.{p1: q1}   // {q1: o.p1}
 
 ### Default values
 
-We use the `=` syntax to provide default values in case the `p1` property is missing from `o`:
+The syntax used in destructuring assignments
+to specify default values with equal signs (*Initializer*) is unchanged.
 
-    o #{ p1 = 42, p2 }
-    o #a = 42
+    o.{p1 = 42}
+    o.(a = 42)
 
 ### Existential handling
 
-The pick operator is defined to return undefined when picking against a non-object, so that
+The dot notation when followed by a picker construct is defined to return undefined when picking against a non-object,
+so that
 
-    { p1 } #null
+    null.{p1}
 
 returns an empty object with no further ado.
 
@@ -112,25 +133,41 @@ or that the property exists.
 
 ### Deep picking
 
-We can deep pick as follows.
-Assuming `o = { p1: 1, p2: { p21: 21, p22: 22 } }`, we could write
+To deep pick,
+assuming `o = { p1: 1, p2: { p21: 21, p22: 22 } }`, we could write the following,
+just as with destructuring assignment:
 
-    o #{ p1, # p2 # p22 }     // {p1: 1, p22: 22}
+    o.{{p1, p2: {p22}}    // {p1: 1, p22: 22}
 
 
 ### Picking properties into values
 
-We can also pick from objects into values, as in
+We can also pick from objects into values,
+by placing picking information in a parenthesized construct after the dot.
 
-    o #p             // o.p
+    o.(p)
 
-With a default value:
+This is exactly the same as `o.p`, but also allows us to provide a default value:
 
-    o #p = 42
+    o.(p = 42)
 
 Since `p` by itself would be a literal key, to provide the key in a variable or expression we write:
 
-   o #(p)
+    o.((p))
+
+The inner set of parenthese forces this to be an expression to be evaluated.
+This is of course identical to just `o[p]`,
+but provides the ability to specify defaults and picktypes (see below).
+
+
+### Other problems to be solved
+
+This proposal provides solutions to two other issues the ES community has been discussing:
+
+ 1. Taking the last element of an array. This can be done now with `a.(-1)`.
+
+1. Null propagation. In this proposal, `a.(b).(c)` propagates nulls by default. To explicitly check for nulls (and throw),
+use the "must" picktype, as in `a.(b).(c!)`.
 
 
 ## Syntax overview
@@ -142,26 +179,27 @@ There are three basic forms.
 
 Picking from objects:
 
-* Pick into object (`object #{ picker, ... }`)
-* Pick into array  (`object #[ picker, ... ]`)
-* Pick into value  (`object #picker`)
+* Pick into object (`object.{ picker, ... }`)
+* Pick into array  (`object.[ picker, ... ]`)
+* Pick into value  (`object.(picker)`)
 
 In addition, there are guarded forms of the pick,
-are represented by `#?`.
+are represented by `.?`.
 
 #### Unary forms
 
+An important part of this proposal is the introduction of dot notation with no left-hand side.
 The pick operator comes in unary and binary forms.
-The examples above show the binary form.
+The examples above show the versions with the left-hand side.
 The unary form creates a **pick function**,
 which may be applied against an object by calling it, as in
 
-    var pick = #{ a };
+    var pick = .{a};
     pick(o)              // equivalent to o #{ a } (which is {a: o.a})
 
 This allows picks to be passed around as first-class objects:
 
-    myfunc(data, #a);    // pass a pick function to retrieve the property 'a'
+    myfunc(data, .a);    // pass a pick function to retrieve the property 'a'
 
     function myfunc(data, picker) { return picker(data); }
 
@@ -170,7 +208,7 @@ This allows picks to be passed around as first-class objects:
 When picking into arrays, each element of the resulting array is
 taken from the corresponding element of the list of pickers, so
 
-    {b:1, a:2} @[a, b]     // yields [2, 1]
+    {b:1, a:2}.[a, b]     // yields [2, 1]
 
 We will now build the definition of "picker" from the bottom up,
 starting with the notion of **key**..
@@ -211,7 +249,7 @@ This refers to keys which haven't been mentioned yet.
 
 For example, we can pick an object's values into an array with:
 
-    object #[ ... ]
+    object.[ ... ]
 
 #### Ranges
 
@@ -219,7 +257,7 @@ There is also a range key, useful in array arithmetic, which has the syntax `key
 
 For example, we can reverse an array with
 
-    a #-1 ... 0
+    a.[-1 ... 0]
 
 #### Picktypes
 
@@ -234,30 +272,30 @@ These are single characters which describe how the picking should be done:
 
 For instance:
 
-    o #{ p! }                // { p: o.p }; throws if p is missing
+    o.{p!}                  // { p: o.p }; throws if p is missing
 
 The caret indicates that the key(s) *must not* exist.
 
-    o #(p, q^)               // { p: o.p }; throws if o.q is present
+    o.(p, q^)               // { p: o.p }; throws if o.q is present
 
 Since picktypes can be applied to keys,
 we can check that all desired keys,
 given as an array of strings, exist:
 
-    o #{ (keys)! }
+    o.{(keys)!}
 
 or that no other keys than `a` exist:
 
-    o #{ a, ...^ }
+    o.{a, ...^}
 
 or that no key starts with `q`, or that at least one key does:
 
-    o #{ /^q/^ }
-    o #{ /^q/! }
+    o.{/^q/^}
+    o.{/^q/!}
 
 We can omit a single property by combining the `~` picktype with rest:
 
-    o #{ a~, ... }
+    o.{a~, ...}
 
 
 ### Picker
@@ -268,7 +306,7 @@ A **picker** is a key with an optional renamer and/or default.
 
 This takes the value given by key from the RHS,
 but renames it to `newkey`, which is usually just a key.
-But it can also be an expression evaluating to a key, or a functi providing a renaming rule.
+But it can also be an expression evaluating to a key, or a function providing a renaming rule.
 When picking into arrays, the `newkey` is an integer index that says where in the array the value is to placed.
 
 The **default** is an expression which is used if the key is missing or the object is defective.
@@ -279,14 +317,14 @@ The special syntax `:= default` is used to provide a function to provide a defau
 A picker may be a pick function.
 We can use this notion to create "nested pickers".
 
-    #picker1 #picker2
+    .picker1.picker2
 
 which means to take the result of picking from the object using `picker1`,
 then pick from that using `picker2`.
 
 This allows us to say
 
-    { b: { a: 1 } } #{#b #a}      // { a : 1 }
+    { b: { a: 1 } }.{.b .a}      // { a : 1 }
 
 Nested pickers can be any number of levels deep:
 
@@ -294,13 +332,13 @@ Nested pickers can be any number of levels deep:
 
 Since picks are functions, they may be composed:
 
-    var picka = #a;
-    var pickb = #b;
-    {a: 1, b: 2} #{(picka), (pickb)}
+    var picka = .a;
+    var pickb = .b;
+    {a: 1, b: 2}.{(picka), (pickb)}
 
 Subpickers can also be used to apply picktypes, defaults or renamers to multiple properties:
 
-    #{#{a, b}! : p => p+"prop"}
+    .{.{a, b}! : p => p+"prop"}
 
 ## BNF Syntax
 
@@ -321,13 +359,34 @@ In the below, `identifier` and `expression` have their JS meanings.
 <pick>               ::= <objectPick> | <arrayPick> | <valuePick>
 
 # Pick operators
-<pickOperator>       ::= "#" | "#?"
+<pickOperator>       ::= "." | ".?"
 <pick>               ::= expression <pickOperator> <pick>
 <pickFunction        ::= <pickOperator> <pick>
 ```
+
+## Which notation, dot or hash?
+
+We also considered using a new notation, possibly the hash mark,
+in lieu of the extended dot notation.
+Both alternatives have advantages and disadvantages.
+The advantages of using the dot are:
+
+1. Extending the dot does not use up a precious symbol/operator.
+
+2. If the notation is intended to be usable in unary/prefix style,
+the dot is less visible and a potential footgun.
+
+3. Semantically, picking is very close to what the dot notation currently does.
+That would suggest extending the dot is better.
+
+4. Using the hash allows value picks without following parentheses,
+so we can write `a#-1` instead of having to write `a.(-1)`.
+
+The POC implementation provides both versions as `pick-dot.sjs` and `pick-hash.sjs`.
 
 ## Revision History
 
 | Version  | Date | Content |
 |:-------- |:---- |:------- |
 | 0.5      | 2016-02-09 | Massive revamping. Picker is now on right of `#`. |
+| 0.6      | 2016-02-11 | Swap `#` to `.`. }
