@@ -1,6 +1,6 @@
 # Extended dot notation in JavaScript
 
-This repo provides information and prototypes for extending JavaScript dot notation,
+This repo provides information and a prototype of the proposal to extend JavaScript dot notation,
 also called "pick notation".
 
 See `js-pick-notation.md` for the proposal.
@@ -24,7 +24,7 @@ See `js-pick-notation.md` for the proposal.
 ### Basics
 
 This proposal extends the dot notation,
-by allowing it to be followed by `()` (yielding a value), `{}` (yielding an object), or `[] (yielding an array)`.
+by allowing the dot to be followed by `()` (yielding a value), `{}` (yielding an object), or `[] (yielding an array)`.
 The `()` and `[]` forms follow destructuring syntax,
 but with additional features.
 
@@ -56,8 +56,8 @@ Assuming
     o.[a]         // [o.a]
     o.[...]       // [o.a, o.b, ...]
     a.[1, 0]      // swap
-    a.[-1 to 0]   // reverse
-    a.[0 to n]    // slice
+    a.[-1 ... 0]  // reverse
+    a.[0 ... n]   // slice
 
 #### Guarded pick
 
@@ -65,7 +65,7 @@ Assuming
 
 #### Creating a stored pick
 
-    var pick = .{a, b};          // use unary # to create stored pick
+    var pick = .{a, b};          // use unary dot to create stored pick
     var picked = pick(o);        // apply pick by calling it on object
 
 ### Implementation details
@@ -74,7 +74,7 @@ The pilot implementation uses the sweet.js macro package.
 The macro definitions are in `lib/pick.js`.
 The macros generate calls to runtime routines which are found in `lib/runtime.js`,
 and are injected into the sweet output.
-
+See `IMPLEMENTATION.md` for more details.
 
 ### Prerequisites
 
