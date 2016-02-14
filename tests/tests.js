@@ -1,45 +1,45 @@
 import * as P from '..';
 import { test } from 'tape';
-var o$1053 = { a: 1 };
-var VALUE_TESTS$1054 = true;
-var OBJECT_TESTS$1055 = true;
+var o$1058 = { a: 1 };
+var VALUE_TESTS$1059 = true;
+var OBJECT_TESTS$1060 = true;
 // PICKING INTO VALUES
-test('pick named property as value', { skip: !VALUE_TESTS$1054 }, function (t$1056) {
-    P.value(P.pick([P.key('plan')]))(t$1056)(2);
-    P.value(P.pick([P.key('equal')]))(t$1056)(P.value(P.pick([P.key('a')]))(o$1053), 1);
-    P.value(P.pick([P.key('equal')]))(t$1056)(P.value(P.pick([P.key('a')]))(o$1053), 1);
+test('pick named property as value', { skip: !VALUE_TESTS$1059 }, function (t$1061) {
+    t$1061.plan(2);
+    t$1061.equal(P.value(P.pick([P.key('a')]))(o$1058), 1);
+    t$1061.equal(P.value(P.pick([P.key('a')]))(o$1058), 1);
 });
-test('pick missing property as value (yields undefined)', { skip: !VALUE_TESTS$1054 }, function (t$1098) {
-    P.value(P.pick([P.key('plan')]))(t$1098)(1);
-    P.value(P.pick([P.key('equal')]))(t$1098)(P.value(P.pick([P.key('b')]))({}), undefined);
+test('pick missing property as value (yields undefined)', { skip: !VALUE_TESTS$1059 }, function (t$1067) {
+    t$1067.plan(1);
+    t$1067.equal(P.value(P.pick([P.key('b')]))({}), undefined);
 });
 //test.skip('retrieve nested property', function(t) {
 // //   t.plan(1);
 // //   t.equal(a # b # {b: o}, 1);
 // // });
-test('pick named property as value', { skip: !VALUE_TESTS$1054 }, function (t$1120) {
-    P.value(P.pick([P.key('plan')]))(t$1120)(1);
-    var prop$1122 = 'a';
-    P.value(P.pick([P.key('equal')]))(t$1120)(P.value(P.pick([P.key(prop$1122)]))(o$1053), 1);
+test('pick named property as value', { skip: !VALUE_TESTS$1059 }, function (t$1071) {
+    t$1071.plan(1);
+    var prop$1073 = 'a';
+    t$1071.equal(P.value(P.pick([P.key(prop$1073)]))(o$1058), 1);
 });
-test('pick mandatory missing property into value (throws)', { skip: !VALUE_TESTS$1054 }, function (t$1143) {
-    P.value(P.pick([P.key('plan')]))(t$1143)(2);
-    P.value(P.pick([P.key('throws')]))(t$1143)(function () {
-        P.value(P.pick([P.must(P.key('b'))]))(o$1053);
+test('pick mandatory missing property into value (throws)', { skip: !VALUE_TESTS$1059 }, function (t$1076) {
+    t$1076.plan(2);
+    t$1076.throws(function () {
+        P.value(P.pick([P.must(P.key('b'))]))(o$1058);
     });
-    P.value(P.pick([P.key('throws')]))(t$1143)(function () {
+    t$1076.throws(function () {
         P.value(P.pick([P.must(P.key('b'))]))(null);
     });
 });
-test('pick missing property into value with default', { skip: !VALUE_TESTS$1054 }, function (t$1149) {
-    P.value(P.pick([P.key('plan')]))(t$1149)(1);
-    P.value(P.pick([P.key('equal')]))(t$1149)(P.value(P.pick([P.deflt(P.key('b'), 22)]))(o$1053), 22);
+test('pick missing property into value with default', { skip: !VALUE_TESTS$1059 }, function (t$1082) {
+    t$1082.plan(1);
+    t$1082.equal(P.value(P.pick([P.deflt(P.key('b'), 22)]))(o$1058), 22);
 });
-test('pick into value using pick function', { skip: !VALUE_TESTS$1054 }, function (t$1171) {
-    P.value(P.pick([P.key('plan')]))(t$1171)(2);
-    var pickfunc$1174 = P.value(P.pick([P.key('a')]));
-    P.value(P.pick([P.key('equal')]))(t$1171)(typeof pickfunc$1174, 'function');
-    P.value(P.pick([P.key('equal')]))(t$1171)(pickfunc$1174(o$1053), 1);
+test('pick into value using pick function', { skip: !VALUE_TESTS$1059 }, function (t$1086) {
+    t$1086.plan(2);
+    var pickfunc$1089 = P.value(P.pick([P.key('a')]));
+    t$1086.equal(typeof pickfunc$1089, 'function');
+    t$1086.equal(pickfunc$1089(o$1058), 1);
 });
 // PICKING INTO OBJECTS
 //test('renaming function: uppercase property names', function(t) {
@@ -47,91 +47,91 @@ test('pick into value using pick function', { skip: !VALUE_TESTS$1054 }, functio
 //  // TODO: figure out why double parentheses are needed here.
 //  t.deepEqual(o.{... -> ((p => p.toUpperCase()))}, {A: 1});
 //});
-test('pick property into object', function (t$1177) {
-    P.value(P.pick([P.key('plan')]))(t$1177)(1);
-    P.value(P.pick([P.key('deepEqual')]))(t$1177)(P.object(P.pick([P.key('a')]))(o$1053), o$1053);
+test('pick property into object', function (t$1092) {
+    t$1092.plan(1);
+    t$1092.deepEqual(P.object(P.pick([P.key('a')]))(o$1058), o$1058);
 });
-test('pick renamed property into object', function (t$1199) {
-    P.value(P.pick([P.key('plan')]))(t$1199)(1);
-    P.value(P.pick([P.key('deepEqual')]))(t$1199)(P.object(P.pick([P.rename(P.key('a'), 'b')]))(o$1053), { b: 1 });
+test('pick renamed property into object', function (t$1096) {
+    t$1096.plan(1);
+    t$1096.deepEqual(P.object(P.pick([P.rename(P.key('a'), 'b')]))(o$1058), { b: 1 });
 });
-test('pick missing mandatory property into object (throws)', function (t$1221) {
-    P.value(P.pick([P.key('plan')]))(t$1221)(1);
-    P.value(P.pick([P.key('throws')]))(t$1221)(function () {
-        P.object(P.pick([P.must(P.key('b'))]))(o$1053);
+test('pick missing mandatory property into object (throws)', function (t$1100) {
+    t$1100.plan(1);
+    t$1100.throws(function () {
+        P.object(P.pick([P.must(P.key('b'))]))(o$1058);
     });
 });
-test('pick must-not-exist property into object (throws)', function (t$1225) {
-    P.value(P.pick([P.key('plan')]))(t$1225)(1);
-    P.value(P.pick([P.key('throws')]))(t$1225)(function () {
-        P.object(P.pick([P.mustnot(P.key('a'))]))(o$1053);
+test('pick must-not-exist property into object (throws)', function (t$1104) {
+    t$1104.plan(1);
+    t$1104.throws(function () {
+        P.object(P.pick([P.mustnot(P.key('a'))]))(o$1058);
     });
 });
-test('pick into object with default value', function (t$1229) {
-    P.value(P.pick([P.key('plan')]))(t$1229)(1);
-    P.value(P.pick([P.key('deepEqual')]))(t$1229)(P.object(P.pick([P.deflt(P.key('b'), 42)]))(o$1053), { b: 42 });
+test('pick into object with default value', function (t$1108) {
+    t$1108.plan(1);
+    t$1108.deepEqual(P.object(P.pick([P.deflt(P.key('b'), 42)]))(o$1058), { b: 42 });
 });
-test('pick properties from array of name into object', function (t$1251) {
-    P.value(P.pick([P.key('plan')]))(t$1251)(1);
-    var props$1253 = ['a'];
-    P.value(P.pick([P.key('deepEqual')]))(t$1251)(P.object(P.pick([P.key(props$1253)]))(o$1053), { a: 1 });
+test('pick properties from array of name into object', function (t$1112) {
+    t$1112.plan(1);
+    var props$1114 = ['a'];
+    t$1112.deepEqual(P.object(P.pick([P.key(props$1114)]))(o$1058), { a: 1 });
 });
-test('pick properties based on regexp', function (t$1274) {
-    P.value(P.pick([P.key('plan')]))(t$1274)(1);
-    var regexp$1276 = /a/;
-    P.value(P.pick([P.key('deepEqual')]))(t$1274)(P.object(P.pick([P.key(regexp$1276)]))(o$1053), { a: 1 });
+test('pick properties based on regexp', function (t$1117) {
+    t$1117.plan(1);
+    var regexp$1119 = /a/;
+    t$1117.deepEqual(P.object(P.pick([P.key(regexp$1119)]))(o$1058), { a: 1 });
 });
-test('pick properties based on object properties', function (t$1297) {
-    P.value(P.pick([P.key('plan')]))(t$1297)(1);
-    var obj$1299 = { a: 1 };
-    P.value(P.pick([P.key('deepEqual')]))(t$1297)(P.object(P.pick([P.key(obj$1299)]))(o$1053), { a: 1 });
+test('pick properties based on object properties', function (t$1122) {
+    t$1122.plan(1);
+    var obj$1124 = { a: 1 };
+    t$1122.deepEqual(P.object(P.pick([P.key(obj$1124)]))(o$1058), { a: 1 });
 });
 //test.skip('invalid value* in picklist throws', function(t) {
 //   t.plan(1);
 //   var val = 22;
 //   t.throws(function() { {(val)}. null; });
 // });
-test('rest operator picks up all props', function (t$1320) {
-    P.value(P.pick([P.key('plan')]))(t$1320)(1);
-    P.value(P.pick([P.key('deepEqual')]))(t$1320)(P.object(P.pick([
+test('rest operator picks up all props', function (t$1127) {
+    t$1127.plan(1);
+    t$1127.deepEqual(P.object(P.pick([
         P.key('a'),
         P.rest()
-    ]))(o$1053), o$1053);
+    ]))(o$1058), o$1058);
 });
-test('mandatory rest with no remaining properties (throws)', function (t$1342) {
-    P.value(P.pick([P.key('plan')]))(t$1342)(1);
-    P.value(P.pick([P.key('throws')]))(t$1342)(function () {
+test('mandatory rest with no remaining properties (throws)', function (t$1131) {
+    t$1131.plan(1);
+    t$1131.throws(function () {
         P.object(P.pick([
             P.key('a'),
             P.must(P.rest())
-        ]))(o$1053);
+        ]))(o$1058);
     });
 });
-test('pick from non-object should throw if #?', function (t$1346) {
-    P.value(P.pick([P.key('plan')]))(t$1346)(1);
-    P.value(P.pick([P.key('throws')]))(t$1346)(function () {
+test('pick from non-object should throw if #?', function (t$1135) {
+    t$1135.plan(1);
+    t$1135.throws(function () {
         P.object(P.pick([P.key('a')]))(P.guard(null));
     });
 });
 // // PICK INTO ARRAY
-test('pick from property into array', function (t$1350) {
-    P.value(P.pick([P.key('plan')]))(t$1350)(1);
-    P.value(P.pick([P.key('deepEqual')]))(t$1350)(P.array(P.pick([P.key('a')]))(o$1053), [1]);
+test('pick from property into array', function (t$1139) {
+    t$1139.plan(1);
+    t$1139.deepEqual(P.array(P.pick([P.key('a')]))(o$1058), [1]);
 });
-test('pick rest from object into array', function (t$1372) {
-    P.value(P.pick([P.key('plan')]))(t$1372)(1);
-    P.value(P.pick([P.key('equal')]))(t$1372)(P.value(P.pick([P.key('length')]))(P.array(P.pick([P.rest()]))(o$1053)), 1);
+test('pick rest from object into array', function (t$1143) {
+    t$1143.plan(1);
+    t$1143.equal(P.array(P.pick([P.rest()]))(o$1058).length, 1);
 });
-test('pick from object into array with rename', function (t$1413) {
-    P.value(P.pick([P.key('plan')]))(t$1413)(1);
-    P.value(P.pick([P.key('equal')]))(// This will create an array of the form `[undefined, 1]`.
-    t$1413)(P.value(P.pick([P.key('length')]))(P.array(P.pick([P.rename(P.key('a'), 1)]))(o$1053)), 2);
+test('pick from object into array with rename', function (t$1148) {
+    t$1148.plan(1);
+    // This will create an array of the form `[undefined, 1]`.
+    t$1148.equal(P.array(P.pick([P.rename(P.key('a'), 1)]))(o$1058).length, 2);
 });
 // PICK FROM ARRAY INTO ARRAY
-test('swap array elements', function (t$1454) {
-    P.value(P.pick([P.key('plan')]))(t$1454)(1);
-    P.value(P.pick([P.key('deepEqual')]))(// This will create an array of the form `[undefined, 1]`.
-    t$1454)(P.array(P.pick([
+test('swap array elements', function (t$1153) {
+    t$1153.plan(1);
+    // This will create an array of the form `[undefined, 1]`.
+    t$1153.deepEqual(P.array(P.pick([
         P.key(1),
         P.key(0)
     ]))([
@@ -142,9 +142,9 @@ test('swap array elements', function (t$1454) {
         1
     ]);
 });
-test('pick from array into array using negative index', function (t$1476) {
-    P.value(P.pick([P.key('plan')]))(t$1476)(1);
-    P.value(P.pick([P.key('deepEqual')]))(t$1476)(P.array(P.pick([
+test('pick from array into array using negative index', function (t$1157) {
+    t$1157.plan(1);
+    t$1157.deepEqual(P.array(P.pick([
         P.key(-1),
         P.key(-2)
     ]))([
@@ -155,9 +155,9 @@ test('pick from array into array using negative index', function (t$1476) {
         1
     ]);
 });
-test('pick from array into array using range', function (t$1498) {
-    P.value(P.pick([P.key('plan')]))(t$1498)(1);
-    P.value(P.pick([P.key('deepEqual')]))(t$1498)(P.array(P.pick([P.range(0, 1)]))([
+test('pick from array into array using range', function (t$1161) {
+    t$1161.plan(1);
+    t$1161.deepEqual(P.array(P.pick([P.range(0, 1)]))([
         1,
         2
     ]), [
@@ -165,9 +165,9 @@ test('pick from array into array using range', function (t$1498) {
         2
     ]);
 });
-test('reverse array', function (t$1520) {
-    P.value(P.pick([P.key('plan')]))(t$1520)(1);
-    P.value(P.pick([P.key('deepEqual')]))(t$1520)(P.array(P.pick([P.range(-1, 0)]))([
+test('reverse array', function (t$1165) {
+    t$1165.plan(1);
+    t$1165.deepEqual(P.array(P.pick([P.range(-1, 0)]))([
         1,
         2,
         3
@@ -177,17 +177,17 @@ test('reverse array', function (t$1520) {
         1
     ]);
 });
-test('initialize array', function (t$1542) {
-    P.value(P.pick([P.key('plan')]))(t$1542)(1);
-    P.value(P.pick([P.key('deepEqual')]))(t$1542)(P.array(P.pick([P.deflt(P.range(0, 2), x$1564 => x$1564 * x$1564, true)]))([]), [
+test('initialize array', function (t$1169) {
+    t$1169.plan(1);
+    t$1169.deepEqual(P.array(P.pick([P.deflt(P.range(0, 2), x$1173 => x$1173 * x$1173, true)]))([]), [
         0,
         1,
         4
     ]);
 });
-test('tail of array by omitting first element', function (t$1565) {
-    P.value(P.pick([P.key('plan')]))(t$1565)(1);
-    P.value(P.pick([P.key('deepEqual')]))(t$1565)(P.array(P.pick([
+test('tail of array by omitting first element', function (t$1174) {
+    t$1174.plan(1);
+    t$1174.deepEqual(P.array(P.pick([
         P.omit(P.key(0)),
         P.rest()
     ]))([
@@ -195,9 +195,9 @@ test('tail of array by omitting first element', function (t$1565) {
         2
     ]), [2]);
 });
-test('splice array', function (t$1587) {
-    P.value(P.pick([P.key('plan')]))(t$1587)(1);
-    P.value(P.pick([P.key('deepEqual')]))(t$1587)(P.array(P.pick([
+test('splice array', function (t$1178) {
+    t$1178.plan(1);
+    t$1178.deepEqual(P.array(P.pick([
         P.omit(P.range(1, 2)),
         P.rest()
     ]))([
@@ -209,4 +209,17 @@ test('splice array', function (t$1587) {
         1,
         4
     ]);
+});
+test('this handling', function (t$1182) {
+    t$1182.plan(1);
+    var o$1184 = {
+        v: 42,
+        f: function () {
+            console.log('this is', this);
+            return this.v;
+        }
+    };
+    var picker$1186 = P.value(P.pick([P.key('f')]));
+    console.log('picker is', picker$1186(o$1184));
+    t$1182.equal(picker$1186(o$1184)(), 42);
 });

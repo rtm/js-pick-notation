@@ -201,6 +201,15 @@ test('splice array', function(t) {
   );
 });
 
+// When the property picked is a function, we must adjust the `this`
+// in order to allow it to be called properly.
+test('this handling', function(t) {
+  t.plan(1);
+  var o = { v: 42, f: function() { return this.v; } };
+  var picker = .f;
+  t.equal(picker(o)(), 42);
+});
+
 // NESTED PICKS
 
 //test.only('nested pick', function(t) {
