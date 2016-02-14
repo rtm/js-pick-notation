@@ -30,10 +30,6 @@ but with additional features.
 
 ### Examples
 
-Assuming
-
-    var o = { a: 1, p: 22, nested: { v: 'v' } };
-
 #### Picking into a value
 
     o.(x!)        // retrieve a mandatory property (throws if missing))

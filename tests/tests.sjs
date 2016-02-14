@@ -51,10 +51,11 @@ test('pick into value using pick function', {skip: !VALUE_TESTS}, function(t) {
 
 // PICKING INTO OBJECTS
 
-test('renaming function: uppercase property names', function(t) {
-  t.plan(1);
-  t.deepEqual(o.{...: (p => p.toUpperCase())}, {A: 1});
-});
+//test('renaming function: uppercase property names', function(t) {
+//  t.plan(1);
+//  // TODO: figure out why double parentheses are needed here.
+//  t.deepEqual(o.{... -> ((p => p.toUpperCase()))}, {A: 1});
+//});
 
 test('pick property into object', function(t) {
   t.plan(1);
@@ -63,7 +64,7 @@ test('pick property into object', function(t) {
 
 test('pick renamed property into object', function(t) {
   t.plan(1);
-  t.deepEqual(o.{a: b}, {b: 1});
+  t.deepEqual(o.{a -> b}, {b: 1});
 });
 
 test('pick missing mandatory property into object (throws)', function(t) {
@@ -137,7 +138,7 @@ test('pick rest from object into array', function(t) {
 test('pick from object into array with rename', function(t) {
   t.plan(1);
   // This will create an array of the form `[undefined, 1]`.
-  t.equal((o.[a: 1]).length, 2);
+  t.equal((o.[a -> 1]).length, 2);
 });
 
 
@@ -199,3 +200,13 @@ test('splice array', function(t) {
     [1, 4]
   );
 });
+
+// NESTED PICKS
+
+//test.only('nested pick', function(t) {
+//  t.plan(1);
+//  t.deepEqual(
+//    {a: {b: 1}}.{a:{b}},
+//    {b: 1}
+//  );
+//});

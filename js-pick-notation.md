@@ -33,7 +33,7 @@ Create an object containing the values of the `a` and `b` properties from object
 
 Support defaults and renaming:
 
-    o2 = o1.{p1: q1 = d1};   // o2 = {q1: o.p1};
+    o2 = o1.{p1 -> q1 = d1};   // o2 = {q1: o.p1};
 
 ## Motivation
 
@@ -105,10 +105,11 @@ or a parenthesized construct (which results in a value).
 
 ### Renaming
 
-The syntax used in destructuring assignments
-to specify new property names with colons (*DestructuringAssignmentTarget*) is unchanged.
+The ability found in destructuring assignments
+to specify new property names with colons (*DestructuringAssignmentTarget*) is supported,
+with the `->` notation.
 
-    o.{p1: q1}   // {q1: o.p1}
+    o.{p1 -> q1}   // {q1: o.p1}
 
 ### Default values
 
@@ -134,10 +135,15 @@ or that the property exists.
 ### Deep picking
 
 To deep pick,
-assuming `o = { p1: 1, p2: { p21: 21, p22: 22 } }`, we could write the following,
-just as with destructuring assignment:
+assuming `o = { p1: 1, p2: { p21: 21, p22: 22 } }`,
+we can deep pick from inside the nested object with
 
-    o.{{p1, p2: {p22}}    // {p1: 1, p22: 22}
+    o.{p1, p2.p22}                 // {p1: 1, p22: 22}
+
+To leave the sub-object in place, but apply picking to it,
+using renaming in this case:
+
+    o.{p1, p2: {p21 -> p21_new}}   // {p1: 1, p21_new: 21}
 
 
 ### Picking properties into values
@@ -295,24 +301,76 @@ or that no key starts with `q`, or that at least one key does:
 
 We can omit a single property by combining the `~` picktype with rest:
 
-    o.{a~, ...}
+o.{a~, ...}
+
+#### Pickgroups as keys (advanced)
+
+There are times when we want to group pickers in order to apply behavior such as "must",
+or a renaming function, or a default, to all of the keys within the group.
+The pick grouping delimiters are `<|` and `|>`.
+For example:
+
+    <|a, b|>!
+
+Indicates that both `a and `b` are mandatory. Another example:
+
+    var x = o.<|a, b!|>
+
+This assigns property `a` from object `o` to variable `x`,
+while also insisting that property `b` be present.
+
+Pick groups may also be used to subpick some properties from multiple object-valued properties:
+
+    o.{<|a, b|>:{c}}
+
+The above picks the property `c` from both `o.a` and `o.b`, yielding
+
+    {a: {c}, b: {c}}
+
+(The choice of these delimiters is based on tokenization limitations in sweet.js,
+the macro processor used for the POC implementation. Other delimiters might be used in the final version.)
 
 
 ### Picker
 
 A **picker** is a key with an optional renamer and/or default.
 
-    key [: newkey] [= default]
+    key [-> newkey] [= default]
 
 This takes the value given by key from the RHS,
 but renames it to `newkey`, which is usually just a key.
 But it can also be an expression evaluating to a key, or a function providing a renaming rule.
 When picking into arrays, the `newkey` is an integer index that says where in the array the value is to placed.
 
+We use `->` for renaming instead of `:`,
+because we need to retain `:` to refer to object-valued property values (see below).
+
 The **default** is an expression which is used if the key is missing or the object is defective.
 The special syntax `:= default` is used to provide a function to provide a default rule.
 
-### Nested pickers and picker composition
+### Advanced topic: nested picking and picker composition
+
+We can define two types of nested picking.
+In the first, we want to pick a value "out of" an object-valued or array-valued property.
+For instance, from `o = {a: {b1: 1, b2: 2}}`, we want to pick `{b1: 1}`.
+The syntax for this is `o.{a.b1}`.
+
+In the second, we want to pick the subobject, but then do further picking inside it.
+The syntax here would be `o.{a:{b1}`,
+and would result in `{a: {b1: 1}}`.
+To rename both `a` and `b1`, the relevant syntax would be:
+
+    o.{a: newa :{b1: newb1}}
+
+which would result in
+
+    {newa: {newb1: 1}}}
+
+In this case, the colon is overloaded.
+The first colon indicates renaming.
+The second colon addresses the subobject.
+
+#### Pick functions
 
 A picker may be a pick function.
 We can use this notion to create "nested pickers".
@@ -326,10 +384,6 @@ This allows us to say
 
     { b: { a: 1 } }.{.b .a}      // { a : 1 }
 
-Nested pickers can be any number of levels deep:
-
-    { c: { b: { a: 99 } } } #{c #b #a}    // { a: 99 }
-
 Since picks are functions, they may be composed:
 
     var picka = .a;
@@ -340,6 +394,20 @@ Subpickers can also be used to apply picktypes, defaults or renamers to multiple
 
     .{.{a, b}! : p => p+"prop"}
 
+Flatten an array:
+
+    [[1, 2], [3, 4]] .[(...) . (...)]
+
+Clone an object two levels deep:
+
+{a: {a1: 1, a2: 2}, b: {b1: 3, b2: 4}} .{...: {...}}
+
+
+### Future issues
+
+How to specify a default as another property value from the same object?
+
+
 ## BNF Syntax
 
 In the below, `identifier` and `expression` have their JS meanings.
@@ -347,7 +415,7 @@ In the below, `identifier` and `expression` have their JS meanings.
 ```
 # Keys
 <basicKey>           ::= <identifier> | <expression>
-<key>                ::= <key> | "..." | <key> "..." <key>
+<key>                ::= <key> | "..." | <key> "..." <key> | <groupPick>
 <picktype>           ::= "!" | "~" | "^"
 <typedKey>           ::= <key> [<picktype>...]
 <picker>             ::= <typedKey> [":" <basicKey>] [["!"] ["="] <expression>]
@@ -355,8 +423,8 @@ In the below, `identifier` and `expression` have their JS meanings.
 # Picks
 <objectPick>         ::= "{" <picker>, ... "}"
 <arrayPick>          ::= "[" <picker>, ... "]"
-<valuePick>          ::= <picker>
-<pick>               ::= <objectPick> | <arrayPick> | <valuePick>
+<groupPick>          ::= "<|" <picker>, ... "|>"
+<pick>               ::= <objectPick> | <arrayPick> | <groupPick> <valuePick>
 
 # Pick operators
 <pickOperator>       ::= "." | ".?"
