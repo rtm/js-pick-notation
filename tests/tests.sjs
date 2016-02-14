@@ -6,6 +6,15 @@ var o = {a: 1};
 var VALUE_TESTS = true;
 var OBJECT_TESTS = true;
 
+// DEEP PICK
+test.only('deep pick', function(t) {
+  t.plan(1);
+  t.deepEqual(
+    {a: {b: 1}}.{a.b},
+    {b: 1}
+  );
+});
+
 // PICKING INTO VALUES
 
 test('pick named property as value', {skip: !VALUE_TESTS}, function (t) {
