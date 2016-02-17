@@ -7,17 +7,17 @@ var VALUE_TESTS = true;
 var OBJECT_TESTS = true;
 
 // DEEP PICK
-test('deep pick', function(t) {
-  t.plan(2);
-  t.deepEqual(
-    {a: {b: 1}}.{a.b},
-    {b: 1}
-  );
-  t.deepEqual(
-    {a: {b: {c: 1}}}.{a.b.c},
-    {c: 1}
-  );
-});
+// test('deep pick', function(t) {
+//   t.plan(2);
+//   t.deepEqual(
+//     {a: {b: 1}}.{a.b},
+//     {b: 1}
+//   );
+//   t.deepEqual(
+//     {a: {b: {c: 1}}}.{a.b.c},
+//     {c: 1}
+//   );
+// });
 
 // PICKING INTO VALUES
 
@@ -232,3 +232,18 @@ test('this handling', function(t) {
 //    {b: 1}
 //  );
 //});
+
+// Pick funcs
+test('pickfuncs as pickelts', function(t) {
+  var o = {a: 1, b: 2};
+  t.plan(3);
+  t.deepEqual(o.{.a}, {a: 1});
+  t.deepEqual(o.{.a, .b}, o);
+  t.deepEqual(o.{.a, . ...}, o, 'rest as function');
+});
+
+test('pickfunc from array of objects', function(t) {
+  t.plan(1);
+  var o = [{a: 1}, {a: 2}];
+  t.deepEqual(o.map(.a), [1, 2]);
+});
