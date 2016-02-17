@@ -1,19 +1,19 @@
-# JavaScript pick notation (extended dot notation)
+# Proposal for JavaScript pick notation (extended dot notation)
 
 ### Executive summary
 
 This document proposes an extension to the JavaScript dot notation.
-Currently, dot notation only allows an identifier (in ES6 spec terminology, (*IdentifierName*) to follow the dot,
+Currently, dot notation only allows an identifier to follow the dot,
 meaning to retrieve the value of key with that name.
 
 This proposal extends the dot notation to allow curly-bracketed, square-bracketed, or parenthesized constructs
 following the dot, allowing properties to be extracted from the expression preceding the dot
-into another object, an array, or a value.
+into a new object, array, or value.
 
 The curly-bracketed or square-bracketed constructs function very similarly to the
 constructs used in destructuring assignment,
 and resemble the *AssignmentPattern*
-construct used in destructuring assignment (but with important extensions).
+construct used in destructuring assignment (but with some differences and important extensions).
 This is not surprising, because this proposal is about a kind of destructuring,
 not into variables as with destructuring assignment,
 but into objects, arrays, and values.
@@ -21,7 +21,7 @@ but into objects, arrays, and values.
 This proposal does not offer new functionality.
 It is intended to allow common cases for property access and manipulation to be written more succinctly.
 
-We also considered a new operator such as `#` instead of the extended dot.
+An alternative to this proposal uses a new operator such as `#` instead of the extended dot.
 See the section below on this topic for pros and cons.
 
 

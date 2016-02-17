@@ -51,8 +51,8 @@ With extended dot notation, we can simply write
 
     o.{(name1), (name2)}
 
-The parentheses in `(name)` tell the system that this is an expression to be evaluated,
-instead of a plan old literal property name.
+The parentheses around `(name)` tell the system that this is an expression to be evaluated,
+instead of a plain old literal property name.
 
 ### Using the new extended dot notation to build arrays
 

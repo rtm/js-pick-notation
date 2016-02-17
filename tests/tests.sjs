@@ -7,11 +7,15 @@ var VALUE_TESTS = true;
 var OBJECT_TESTS = true;
 
 // DEEP PICK
-test.only('deep pick', function(t) {
-  t.plan(1);
+test('deep pick', function(t) {
+  t.plan(2);
   t.deepEqual(
     {a: {b: 1}}.{a.b},
     {b: 1}
+  );
+  t.deepEqual(
+    {a: {b: {c: 1}}}.{a.b.c},
+    {c: 1}
   );
 });
 
