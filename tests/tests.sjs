@@ -247,3 +247,36 @@ test('pickfunc from array of objects', function(t) {
   var o = [{a: 1}, {a: 2}];
   t.deepEqual(o.map(.a), [1, 2]);
 });
+
+// Grouped picks
+test('grouped pick', function(t) {
+  t.plan(4);
+
+  // Basic grouped pick.
+  t.deepEquals(
+    {a: 1, b: 2, c: 3}.{{a, b}},
+    {a: 1, b: 2},
+    "Basic grouped pick"
+  );
+
+  // Apply renaming func to all members of group.
+  t.deepEquals(
+    {a: 1, b: 2, c: 3}.{{a, b} -> (p => p + "1")},
+    {a1: 1, b1: 2},
+    "Renaming grouped pick"
+  );
+
+  // Apply renaming func with index to all members of group.
+  t.deepEquals(
+    {a: 1, b: 2, c: 3}.{{a, b} -> ((p, i) => "x" + i)},
+    {x0: 1, x1: 2},
+    "Renaming grouped pick with index"
+  );
+
+  // Apply must-not operator to all members of group.
+  t.throws(
+    function() {
+      {a: 1, b: 2, c: 3}.{{a, b}^};
+    }
+  );
+});

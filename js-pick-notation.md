@@ -307,10 +307,10 @@ o.{a~, ...}
 
 There are times when we want to group pickers in order to apply behavior such as "must",
 or a renaming function, or a default, to all of the keys within the group.
-The pick grouping delimiters are `<|` and `|>`.
+This can be accomplished by enclosing them in curly braces.
 For example:
 
-    <|a, b|>!
+    o.{{a, b}!}
 
 Indicates that both `a and `b` are mandatory. Another example:
 
@@ -321,14 +321,11 @@ while also insisting that property `b` be present.
 
 Pick groups may also be used to subpick some properties from multiple object-valued properties:
 
-    o.{<|a, b|>:{c}}
+    o.{{|a, b}:{c}}
 
 The above picks the property `c` from both `o.a` and `o.b`, yielding
 
     {a: {c}, b: {c}}
-
-(The choice of these delimiters is based on tokenization limitations in sweet.js,
-the macro processor used for the POC implementation. Other delimiters might be used in the final version.)
 
 
 ### Picker
@@ -350,25 +347,23 @@ The special syntax `:= default` is used to provide a function to provide a defau
 
 ### Advanced topic: nested picking and picker composition
 
-We can define two types of nested picking.
+We need to distinguish between two types of nested picking.
 In the first, we want to pick a value "out of" an object-valued or array-valued property.
 For instance, from `o = {a: {b1: 1, b2: 2}}`, we want to pick `{b1: 1}`.
 The syntax for this is `o.{a.b1}`.
+We call this "deep picking".
 
 In the second, we want to pick the subobject, but then do further picking inside it.
 The syntax here would be `o.{a:{b1}`,
 and would result in `{a: {b1: 1}}`.
+We call this "nested picking".
 To rename both `a` and `b1`, the relevant syntax would be:
 
-    o.{a: newa :{b1: newb1}}
+    o.{a-> newa :{b1-> newb1}}
 
 which would result in
 
     {newa: {newb1: 1}}}
-
-In this case, the colon is overloaded.
-The first colon indicates renaming.
-The second colon addresses the subobject.
 
 #### Pick functions
 
@@ -415,7 +410,7 @@ In the below, `identifier` and `expression` have their JS meanings.
 ```
 # Keys
 <basicKey>           ::= <identifier> | <expression>
-<key>                ::= <key> | "..." | <key> "..." <key> | <groupPick>
+<key>                ::= <key> | "..." | <key> "..." <key>
 <picktype>           ::= "!" | "~" | "^"
 <typedKey>           ::= <key> [<picktype>...]
 <picker>             ::= <typedKey> [":" <basicKey>] [["!"] ["="] <expression>]
@@ -423,8 +418,7 @@ In the below, `identifier` and `expression` have their JS meanings.
 # Picks
 <objectPick>         ::= "{" <picker>, ... "}"
 <arrayPick>          ::= "[" <picker>, ... "]"
-<groupPick>          ::= "<|" <picker>, ... "|>"
-<pick>               ::= <objectPick> | <arrayPick> | <groupPick> <valuePick>
+<pick>               ::= <objectPick> | <arrayPick> | <valuePick>
 
 # Pick operators
 <pickOperator>       ::= "." | ".?"
