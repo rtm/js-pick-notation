@@ -214,6 +214,44 @@ test('splice array', function(t) {
   );
 });
 
+test('clone array', function(t) {
+  t.plan(1);
+  t.deepEqual(
+    [1, 2].[...],
+    [1, 2]
+  );
+});
+
+test('flatten array', function(t) {
+  t.plan(1);
+  t.deepEqual(
+    [[1, 2], [3, 4]].[... . ...],
+    [1, 2, 3, 4]
+  );
+});
+
+test('clone array to two levels', function(t) {
+  var a = [[1, 2], [3, 4]];
+  t.plan(1);
+  t.deepEqual(a.[... :[...]], a);
+});
+
+test('pick first element of each subarray', function(t) {
+  t.plan(1);
+  t.deepEqual(
+    [[1, 2], [3, 4]].[... . 0],
+    [1, 3]
+  );
+});
+
+test('take first element of each subarray', function(t) {
+  t.plan(1);
+  t.deepEqual(
+    [[1, 2], [3, 4]].[...: [0]],
+    [[1], [3]]
+  );
+});
+
 // When the property picked is a function, we must adjust the `this`
 // in order to allow it to be called properly.
 test('this handling', function(t) {
