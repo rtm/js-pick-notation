@@ -67,7 +67,7 @@ test('pick into value using pick function', {skip: !VALUE_TESTS}, function(t) {
 //test('renaming function: uppercase property names', function(t) {
 //  t.plan(1);
 //  // TODO: figure out why double parentheses are needed here.
-//  t.deepEqual(o.{... -> ((p => p.toUpperCase()))}, {A: 1});
+//  t.deepEqual(o.{* -> ((p => p.toUpperCase()))}, {A: 1});
 //});
 
 test('pick property into object', function(t) {
@@ -121,13 +121,13 @@ test('pick properties based on object properties', function(t) {
 
 test('rest operator picks up all props', function(t) {
   t.plan(1);
-  t.deepEqual(o.{a, ...}, o);
+  t.deepEqual(o.{a, *}, o);
 });
 
 test('mandatory rest with no remaining properties (throws)', function(t) {
   t.plan(1);
   t.throws(function() {
-    o. {a, ...!};
+    o. {a, *!};
   });
 });
 
@@ -145,7 +145,7 @@ test('pick from property into array', function(t) {
 
 test('pick rest from object into array', function(t) {
   t.plan(1);
-  t.equal((o.[...]).length, 1);
+  t.equal((o.[*]).length, 1);
 });
 
 test('pick from object into array with rename', function(t) {
@@ -177,7 +177,7 @@ test('pick from array into array using negative index', function(t) {
 test('pick from array into array using range', function(t) {
   t.plan(1);
   t.deepEqual(
-    [1, 2].[0 ...1],
+    [1, 2].[0 to 1],
     [1, 2]
   );
 });
@@ -185,7 +185,7 @@ test('pick from array into array using range', function(t) {
 test('reverse array', function(t) {
   t.plan(1);
   t.deepEqual(
-    [1, 2, 3].[-1 ...0],
+    [1, 2, 3].[-1 to 0],
     [3, 2, 1]
   );
 });
@@ -193,7 +193,7 @@ test('reverse array', function(t) {
 test('initialize array', function(t) {
   t.plan(1);
   t.deepEqual(
-    [].[0 ...2 := (x => x * x)],
+    [].[0 to 2 := (x => x * x)],
     [0, 1, 4]
   );
 });
@@ -201,7 +201,7 @@ test('initialize array', function(t) {
 test('tail of array by omitting first element', function(t) {
   t.plan(1);
   t.deepEqual(
-    [1, 2].[0~, ...],
+    [1, 2].[0~, *],
     [2]
   );
 });
@@ -209,7 +209,7 @@ test('tail of array by omitting first element', function(t) {
 test('splice array', function(t) {
   t.plan(1);
   t.deepEqual(
-    [1, 2, 3, 4].[1 ...2~, ...],
+    [1, 2, 3, 4].[1 to 2~, *],
     [1, 4]
   );
 });
@@ -217,7 +217,7 @@ test('splice array', function(t) {
 test('clone array', function(t) {
   t.plan(1);
   t.deepEqual(
-    [1, 2].[...],
+    [1, 2].[*],
     [1, 2]
   );
 });
@@ -225,7 +225,7 @@ test('clone array', function(t) {
 test('flatten array', function(t) {
   t.plan(1);
   t.deepEqual(
-    [[1, 2], [3, 4]].[... . ...],
+    [[1, 2], [3, 4]].[*.*],
     [1, 2, 3, 4]
   );
 });
@@ -233,13 +233,13 @@ test('flatten array', function(t) {
 test('clone array to two levels', function(t) {
   var a = [[1, 2], [3, 4]];
   t.plan(1);
-  t.deepEqual(a.[... :[...]], a);
+  t.deepEqual(a.[*:[*]], a);
 });
 
 test('pick first element of each subarray', function(t) {
   t.plan(1);
   t.deepEqual(
-    [[1, 2], [3, 4]].[... . 0],
+    [[1, 2], [3, 4]].[* . 0],
     [1, 3]
   );
 });
@@ -247,7 +247,7 @@ test('pick first element of each subarray', function(t) {
 test('take first element of each subarray', function(t) {
   t.plan(1);
   t.deepEqual(
-    [[1, 2], [3, 4]].[...: [0]],
+    [[1, 2], [3, 4]].[*: [0]],
     [[1], [3]]
   );
 });
@@ -263,13 +263,13 @@ test('this handling', function(t) {
 
 // NESTED PICKS
 
-//test.only('nested pick', function(t) {
-//  t.plan(1);
-//  t.deepEqual(
-//    {a: {b: 1}}.{a:{b}},
-//    {b: 1}
-//  );
-//});
+test('nested pick', function(t) {
+  t.plan(1);
+  t.deepEqual(
+    {a: {b: 1}}.{a:{b}},
+    {a: {b: 1}}
+  );
+});
 
 // Pick funcs
 test('pickfuncs as pickelts', function(t) {
@@ -277,7 +277,7 @@ test('pickfuncs as pickelts', function(t) {
   t.plan(3);
   t.deepEqual(o.{.a}, {a: 1});
   t.deepEqual(o.{.a, .b}, o);
-  t.deepEqual(o.{.a, . ...}, o, 'rest as function');
+  t.deepEqual(o.{.a, .*}, o, 'rest as function');
 });
 
 test('pickfunc from array of objects', function(t) {

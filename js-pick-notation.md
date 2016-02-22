@@ -250,20 +250,20 @@ If a function, it is treated as a pick function to do further picking.
 
 #### Rest
 
-In addition, there is the "rest" pseudo-key, written as `...`.
-This refers to keys which haven't been mentioned yet.
+In addition, there is the "all" pseudo-key, written as `*`.
+This refers to all keys (which haven't been mentioned yet).
 
 For example, we can pick an object's values into an array with:
 
-    object.[ ... ]
+    object.[*]
 
 #### Ranges
 
-There is also a range key, useful in array arithmetic, which has the syntax `key...key`.
+There is also a range key, useful in array arithmetic, which has the syntax `key to key`.
 
 For example, we can reverse an array with
 
-    a.[-1 ... 0]
+    a.[-1 to 0]
 
 #### Picktypes
 
@@ -292,16 +292,16 @@ given as an array of strings, exist:
 
 or that no other keys than `a` exist:
 
-    o.{a, ...^}
+    o.{a, *^}
 
 or that no key starts with `q`, or that at least one key does:
 
     o.{/^q/^}
     o.{/^q/!}
 
-We can omit a single property by combining the `~` picktype with rest:
+We can omit a single property by combining the `~` picktype with all:
 
-o.{a~, ...}
+o.{a~, *}
 
 #### Pickgroups as keys (advanced)
 
@@ -391,11 +391,11 @@ Subpickers can also be used to apply picktypes, defaults or renamers to multiple
 
 Flatten an array:
 
-    [[1, 2], [3, 4]] .[(...) . (...)]
+    [[1, 2], [3, 4]] .[*.*]
 
 Clone an object two levels deep:
 
-{a: {a1: 1, a2: 2}, b: {b1: 3, b2: 4}} .{...: {...}}
+{a: {a1: 1, a2: 2}, b: {b1: 3, b2: 4}} .{*: {*}}
 
 
 ### Future issues
@@ -410,7 +410,7 @@ In the below, `identifier` and `expression` have their JS meanings.
 ```
 # Keys
 <basicKey>           ::= <identifier> | <expression>
-<key>                ::= <key> | "..." | <key> "..." <key>
+<key>                ::= <key> | "*" | <key> "..." <key>
 <picktype>           ::= "!" | "~" | "^"
 <typedKey>           ::= <key> [<picktype>...]
 <picker>             ::= <typedKey> [":" <basicKey>] [["!"] ["="] <expression>]

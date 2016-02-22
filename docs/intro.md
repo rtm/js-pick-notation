@@ -125,10 +125,10 @@ So we can write
 
     a.[0, -1]
 
-When picking from arrays, we can also give a **range** of indexes, using the `...` notation.
+When picking from arrays, we can also give a **range** of indexes, using the `to` notation.
 So to pick the `n` elements from the beginning of the array, we can write
 
-    a.[0 ... n]
+    a.[0 to n]
 
 This is the same as `slice` but perhaps a bit more readable.
 
@@ -146,7 +146,7 @@ Extended dot notation has many other features.
 See the spec for details.
 Here's a sampler:
 
- 1. Use the `rest` operator (`...`) to refer to all other properties or array elements.
+ 1. Use the `all` notation (`*`) to refer to all other properties or array elements.
 
  1. Specify that properties must be present using `!`, or must not be present using `^`, or should not be picked using `~`.
 
