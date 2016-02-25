@@ -33,7 +33,7 @@ Create an object containing the values of the `a` and `b` properties from object
 
 Support defaults and renaming:
 
-    o2 = o1.{p1 -> q1 = d1};   // o2 = {q1: o.p1};
+    o2 = o1.{p1 as q1 = d1};   // o2 = {q1: o.p1};
 
 ## Motivation
 
@@ -107,9 +107,9 @@ or a parenthesized construct (which results in a value).
 
 The ability found in destructuring assignments
 to specify new property names with colons (*DestructuringAssignmentTarget*) is supported,
-with the `->` notation.
+with the `as` notation.
 
-    o.{p1 -> q1}   // {q1: o.p1}
+    o.{p1 as q1}   // {q1: o.p1}
 
 ### Default values
 
@@ -143,7 +143,7 @@ we can deep pick from inside the nested object with
 To leave the sub-object in place, but apply picking to it,
 using renaming in this case:
 
-    o.{p1, p2: {p21 -> p21_new}}   // {p1: 1, p21_new: 21}
+    o.{p1, p2: {p21 as p21_new}}   // {p1: 1, p21_new: 21}
 
 
 ### Picking properties into values
@@ -332,14 +332,14 @@ The above picks the property `c` from both `o.a` and `o.b`, yielding
 
 A **picker** is a key with an optional renamer and/or default.
 
-    key [-> newkey] [= default]
+    key [as newkey] [= default]
 
 This takes the value given by key from the RHS,
 but renames it to `newkey`, which is usually just a key.
 But it can also be an expression evaluating to a key, or a function providing a renaming rule.
 When picking into arrays, the `newkey` is an integer index that says where in the array the value is to placed.
 
-We use `->` for renaming instead of `:`,
+We use `as` for renaming instead of `:`,
 because we need to retain `:` to refer to object-valued property values (see below).
 
 The **default** is an expression which is used if the key is missing or the object is defective.
@@ -359,7 +359,7 @@ and would result in `{a: {b1: 1}}`.
 We call this "nested picking".
 To rename both `a` and `b1`, the relevant syntax would be:
 
-    o.{a-> newa :{b1-> newb1}}
+    o.{a as newa :{b1 as newb1}}
 
 which would result in
 

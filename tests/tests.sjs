@@ -67,7 +67,7 @@ test('pick into value using pick function', {skip: !VALUE_TESTS}, function(t) {
 //test('renaming function: uppercase property names', function(t) {
 //  t.plan(1);
 //  // TODO: figure out why double parentheses are needed here.
-//  t.deepEqual(o.{* -> ((p => p.toUpperCase()))}, {A: 1});
+//  t.deepEqual(o.{* as ((p => p.toUpperCase()))}, {A: 1});
 //});
 
 test('pick property into object', function(t) {
@@ -77,7 +77,7 @@ test('pick property into object', function(t) {
 
 test('pick renamed property into object', function(t) {
   t.plan(1);
-  t.deepEqual(o.{a -> b}, {b: 1});
+  t.deepEqual(o.{a as b}, {b: 1});
 });
 
 test('pick missing mandatory property into object (throws)', function(t) {
@@ -151,7 +151,7 @@ test('pick rest from object into array', function(t) {
 test('pick from object into array with rename', function(t) {
   t.plan(1);
   // This will create an array of the form `[undefined, 1]`.
-  t.equal((o.[a -> 1]).length, 2);
+  t.equal((o.[a as 1]).length, 2);
 });
 
 
@@ -299,14 +299,14 @@ test('grouped pick', function(t) {
 
   // Apply renaming func to all members of group.
   t.deepEquals(
-    {a: 1, b: 2, c: 3}.{{a, b} -> (p => p + "1")},
+    {a: 1, b: 2, c: 3}.{{a, b} as (p => p + "1")},
     {a1: 1, b1: 2},
     "Renaming grouped pick"
   );
 
   // Apply renaming func with index to all members of group.
   t.deepEquals(
-    {a: 1, b: 2, c: 3}.{{a, b} -> ((p, i) => "x" + i)},
+    {a: 1, b: 2, c: 3}.{{a, b} as ((p, i) => "x" + i)},
     {x0: 1, x1: 2},
     "Renaming grouped pick with index"
   );

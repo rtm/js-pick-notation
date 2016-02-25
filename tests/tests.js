@@ -57,7 +57,7 @@ test('pick into value using pick function', { skip: !VALUE_TESTS$1054 }, functio
 //test('renaming function: uppercase property names', function(t) {
 //  t.plan(1);
 //  // TODO: figure out why double parentheses are needed here.
-//  t.deepEqual(o.{* -> ((p => p.toUpperCase()))}, {A: 1});
+//  t.deepEqual(o.{* as ((p => p.toUpperCase()))}, {A: 1});
 //});
 test('pick property into object', function (t$1087) {
     t$1087.plan(1);
