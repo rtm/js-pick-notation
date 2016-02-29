@@ -4,7 +4,7 @@
   "description": "This repo provides information and prototypes for the proposed JavaScript pick operator.",
   "main": "index.js",
   "scripts": {
-    "test": "make tests/tests.js; babel-node tests/tests.js | node_modules/.bin/tap-colorize --pass green"
+    "test": "time make tests/tests.js; babel-node tests/tests.js | node_modules/.bin/tap-colorize --pass green"
   },
   "repository": {
     "type": "git",
