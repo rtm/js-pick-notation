@@ -31,10 +31,6 @@ Create an object containing the values of the `a` and `b` properties from object
 
     o2 = o1.{a, b};          // o2 = {a: o1.a, b: o1.b}
 
-Support defaults and renaming:
-
-    o2 = o1.{p1 as q1 = d1};   // o2 = {q1: o.p1};
-
 ## Motivation
 
 Some meaningful portion of JS written today is concerned with manipulating and extracting properties from objects.
@@ -71,7 +67,7 @@ Other libraries have also acknolwedged the importance of pick-like operations.
 
 ### How is this different from destructuring?
 
-ES6 does support picking-related functionality in the form of destructuring assignment.
+ES6 does support picking-like functionality in the form of destructuring assignment.
 We write
 
     let { p1, p2 } = o;
@@ -107,14 +103,14 @@ or a parenthesized construct (which results in a value).
 
 The ability found in destructuring assignments
 to specify new property names with colons (*DestructuringAssignmentTarget*) is supported,
-with the `as` notation.
+with the `:` notation.
 
-    o.{p1 as q1}   // {q1: o.p1}
+    o.{p1: q1}   // {q1: o.p1}
 
 ### Default values
 
 The syntax used in destructuring assignments
-to specify default values with equal signs (*Initializer*) is unchanged.
+to specify default values with equal signs is unchanged.
 
     o.{p1 = 42}
     o.(a = 42)
@@ -141,9 +137,9 @@ we can deep pick from inside the nested object with
     o.{p1, p2.p22}                 // {p1: 1, p22: 22}
 
 To leave the sub-object in place, but apply picking to it,
-using renaming in this case:
+using renaming in this case, we do what is called "nested" picking with `..`:
 
-    o.{p1, p2: {p21 as p21_new}}   // {p1: 1, p21_new: 21}
+    o.{p1, p2..{p21:as p21_new}}   // {p1: 1, p2: {p21_new: 21}}
 
 
 ### Picking properties into values
@@ -157,23 +153,23 @@ This is exactly the same as `o.p`, but also allows us to provide a default value
 
     o.(p = 42)
 
-Since `p` by itself would be a literal key, to provide the key in a variable or expression we write:
+Since `p` by itself is considered a literal key, to provide the key in a variable or expression we write:
 
     o.((p))
 
-The inner set of parenthese forces this to be an expression to be evaluated.
+The inner set of parentheses forces this to be an expression to be evaluated.
 This is of course identical to just `o[p]`,
 but provides the ability to specify defaults and picktypes (see below).
 
 
-### Other problems to be solved
+### Other problems this solves
 
 This proposal provides solutions to two other issues the ES community has been discussing:
 
- 1. Taking the last element of an array. This can be done now with `a.(-1)`.
+ 1. Taking the last element of an array. This can be done now with `a.-1`.
 
-1. Null propagation. In this proposal, `a.(b).(c)` propagates nulls by default. To explicitly check for nulls (and throw),
-use the "must" picktype, as in `a.(b).(c!)`.
+ 1. Null propagation. In this proposal, `a.(b).(c)` propagates nulls by default. To explicitly check for nulls (and throw),
+use the "must" picktype, as in `a.b.c!`.
 
 
 ## Syntax overview
@@ -238,7 +234,7 @@ To distinguish it from a literal key, make it an expression by enclosing it in p
 
     (a)   // key given by evaluating `a`
 
-It would be nice if we could use `[a]` for this,
+Some might suggest using `[a]` for this,
 mimicking the syntax for computed property values,
 but stealing this array-like format prevents us from implementing some other desirable features.
 
@@ -248,7 +244,7 @@ If an object, it means all the keys in the object.
 If a regexp, it means all keys matching the regexp.
 If a function, it is treated as a pick function to do further picking.
 
-#### Rest
+#### All
 
 In addition, there is the "all" pseudo-key, written as `*`.
 This refers to all keys (which haven't been mentioned yet).
@@ -306,7 +302,8 @@ o.{a~, *}
 #### Pickgroups as keys (advanced)
 
 There are times when we want to group pickers in order to apply behavior such as "must",
-or a renaming function, or a default, to all of the keys within the group.
+or a renaming function, or a default, or a deep or nested pick,
+to all of the keys within the group.
 This can be accomplished by enclosing them in curly braces.
 For example:
 
@@ -314,14 +311,14 @@ For example:
 
 Indicates that both `a and `b` are mandatory. Another example:
 
-    var x = o.<|a, b!|>
+    var x = o.{a, b!}
 
 This assigns property `a` from object `o` to variable `x`,
 while also insisting that property `b` be present.
 
 Pick groups may also be used to subpick some properties from multiple object-valued properties:
 
-    o.{{|a, b}:{c}}
+    o.{{a, b}..{c}}
 
 The above picks the property `c` from both `o.a` and `o.b`, yielding
 
@@ -332,34 +329,31 @@ The above picks the property `c` from both `o.a` and `o.b`, yielding
 
 A **picker** is a key with an optional renamer and/or default.
 
-    key [as newkey] [= default]
+    key [:newkey] [= default]
 
 This takes the value given by key from the RHS,
 but renames it to `newkey`, which is usually just a key.
 But it can also be an expression evaluating to a key, or a function providing a renaming rule.
 When picking into arrays, the `newkey` is an integer index that says where in the array the value is to placed.
 
-We use `as` for renaming instead of `:`,
-because we need to retain `:` to refer to object-valued property values (see below).
-
 The **default** is an expression which is used if the key is missing or the object is defective.
 The special syntax `:= default` is used to provide a function to provide a default rule.
 
 ### Advanced topic: nested picking and picker composition
 
-We need to distinguish between two types of nested picking.
+We need to distinguish between two types of multi-level picking.
 In the first, we want to pick a value "out of" an object-valued or array-valued property.
 For instance, from `o = {a: {b1: 1, b2: 2}}`, we want to pick `{b1: 1}`.
 The syntax for this is `o.{a.b1}`.
 We call this "deep picking".
 
 In the second, we want to pick the subobject, but then do further picking inside it.
-The syntax here would be `o.{a:{b1}`,
+The syntax here would be `o.{a..{b1}`,
 and would result in `{a: {b1: 1}}`.
 We call this "nested picking".
 To rename both `a` and `b1`, the relevant syntax would be:
 
-    o.{a as newa :{b1 as newb1}}
+    o.{a: newa..{b1: newb1}}
 
 which would result in
 
@@ -387,11 +381,11 @@ Since picks are functions, they may be composed:
 
 Subpickers can also be used to apply picktypes, defaults or renamers to multiple properties:
 
-    .{.{a, b}! : p => p+"prop"}
+    .{.{a, b}!: p => p+"prop"}
 
 Flatten an array:
 
-    [[1, 2], [3, 4]] .[*.*]
+    [[1, 2], [3, 4]].[*.*]
 
 Clone an object two levels deep:
 
@@ -410,10 +404,14 @@ In the below, `identifier` and `expression` have their JS meanings.
 ```
 # Keys
 <basicKey>           ::= <identifier> | <expression>
-<key>                ::= <key> | "*" | <key> "..." <key>
+<key>                ::= <key> | "*" | <key> "to" <key> | "{" <picker> ... "}"
 <picktype>           ::= "!" | "~" | "^"
-<typedKey>           ::= <key> [<picktype>...]
-<picker>             ::= <typedKey> [":" <basicKey>] [["!"] ["="] <expression>]
+<renamer>            ::= ":" <basicKey>
+<default>            ::= "=" <expression> | ":=" <expression>
+<deep>               ::= "." <key>
+<nested>             ::= ".." <key>
+<modifer>            ::= <picktype> | <nested> | <deep> | <renamer> | <default>
+<picker>             ::= <key> <modifier> ...
 
 # Picks
 <objectPick>         ::= "{" <picker>, ... "}"
@@ -444,11 +442,10 @@ That would suggest extending the dot is better.
 4. Using the hash allows value picks without following parentheses,
 so we can write `a#-1` instead of having to write `a.(-1)`.
 
-The POC implementation provides both versions as `pick-dot.sjs` and `pick-hash.sjs`.
-
 ## Revision History
 
 | Version  | Date | Content |
 |:-------- |:---- |:------- |
 | 0.5      | 2016-02-09 | Massive revamping. Picker is now on right of `#`. |
 | 0.6      | 2016-02-11 | Swap `#` to `.`. }
+| 0.7      | 2016-03-01 | Change renaming to `:`, nesting to `..`

@@ -4,28 +4,15 @@ This repo provides information and a prototype of the proposal to extend JavaScr
 also called "pick notation".
 
 See `js-pick-notation.md` for the proposal.
-
-### Installation
-
-    git clone https://github.com/rtm/js-pick-notation.git
-    cd js-pick-notation
-    npm install
-
-### Testing
-
-    npm test
-
-### Running your own
-
- 2. Create a JS file such as `test.sjs` (note extension).
- 3. Compile it with `make test.js`.
- 4. Run it with `babel-node test.js`.
+See `docs/intro.jd` for a friendly introduction.
 
 ### Basics
 
 This proposal extends the dot notation,
-by allowing the dot to be followed by `()` (yielding a value), `{}` (yielding an object), or `[] (yielding an array)`.
-The `()` and `[]` forms follow destructuring syntax,
+to make it much easier to manipulate object properties,
+by "picking" them into new objects.
+It allows the dot to be followed by `()` (yielding a value), `{}` (yielding an object), or `[]` (yielding an array)`.
+The `()` and `[]` forms loosely follow destructuring syntax,
 but with additional features.
 
 ### Examples
@@ -45,15 +32,15 @@ but with additional features.
     o.{b = 42}    // retrieve property with default
     o.{(keys)}    // retrieve properties given in array
     o.{/p/}       // retrieve properties matching regexp
-    o.{a~, ...}   // omit `a`
+    o.{a~, *}     // omit `a`
 
 #### Picking into an array
 
     o.[a]         // [o.a]
-    o.[...]       // [o.a, o.b, ...]
+    o.[*]         // [o.a, o.b, ...]
     a.[1, 0]      // swap
-    a.[-1 ... 0]  // reverse
-    a.[0 ... n]   // slice
+    a.[-1 to  0]  // reverse
+    a.[0 to  n]   // slice
 
 #### Guarded pick
 
@@ -63,6 +50,23 @@ but with additional features.
 
     var pick = .{a, b};          // use unary dot to create stored pick
     var picked = pick(o);        // apply pick by calling it on object
+
+### Installation
+
+    git clone https://github.com/rtm/js-pick-notation.git
+    cd js-pick-notation
+    npm install
+
+### Testing
+
+    npm test
+
+### Running your own
+
+ 2. Create a JS file such as `test.sjs` (note extension).
+ 3. Compile it with `make test.js`.
+ 4. Run it with `babel-node test.js`.
+
 
 ### Implementation details
 

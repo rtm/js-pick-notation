@@ -100,13 +100,13 @@ Currently we'd write
     {new_p1: o.p1}
 
 With extended dot notation,
-we can specify a new name using the `as` notation, as follows:
+we can specify a new name using the `:` notation, as follows:
 
-    o.{p1 as new_p1}
+    o.{p1: new_p1}
 
 We can combine this with defaults, so
 
-    o.{p1 as new_p1 = 42}
+    o.{p1: new_p1 = 42}
 
 ### Picking from arrays
 

@@ -2,23 +2,10 @@
 
 The POC for pick notation is implemented using the sweet.js maro package.
 The macro definitions are in `lib/pick.js`.
-(An alternative set of macro definitions, using `#` rather than `.`,
-are in `lib/pick-hash.sjs`).
 The macros generate calls to runtime routines which are found in `lib/runtime.js`,
 and are injected into the sweet output.
 
 ## Limitations and known bugs
-
-### Range (...)
-
-If the first element of a range is a numeric literal,
-it must be followed by a space in order to avoid the first dot of the ellipsis being parses as a decimal point.
-
-### Picktypes
-
-Only up to two picktypes (`!`, `~`, and `^`) are supported.
-Of course, combining three would not have much meaning.
-Duplicate picktypes are not caught.
 
 ### Binding of `.`
 

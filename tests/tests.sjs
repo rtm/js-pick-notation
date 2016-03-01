@@ -1,23 +1,9 @@
 import test from 'tape';
 
-
 var o = {a: 1};
 
 var VALUE_TESTS = true;
 var OBJECT_TESTS = true;
-
-// DEEP PICK
-// test('deep pick', function(t) {
-//   t.plan(2);
-//   t.deepEqual(
-//     {a: {b: 1}}.{a.b},
-//     {b: 1}
-//   );
-//   t.deepEqual(
-//     {a: {b: {c: 1}}}.{a.b.c},
-//     {c: 1}
-//   );
-// });
 
 // PICKING INTO VALUES
 
@@ -32,10 +18,10 @@ test('pick missing property as value (yields undefined)', {skip: !VALUE_TESTS}, 
   t.equal({}.(b), undefined);
 });
 
-//test.skip('retrieve nested property', function(t) {
-// //   t.plan(1);
-// //   t.equal(a # b # {b: o}, 1);
-// // });
+test('retrieve nested property', function(t) {
+  t.plan(1);
+  t.equal({a: {b: 1}}.(a.b), 1);
+});
 
 test('pick named property as value', {skip: !VALUE_TESTS}, function(t) {
   t.plan(1);
@@ -64,11 +50,11 @@ test('pick into value using pick function', {skip: !VALUE_TESTS}, function(t) {
 
 // PICKING INTO OBJECTS
 
-//test('renaming function: uppercase property names', function(t) {
-//  t.plan(1);
-//  // TODO: figure out why double parentheses are needed here.
-//  t.deepEqual(o.{* as ((p => p.toUpperCase()))}, {A: 1});
-//});
+test('renaming function: uppercase property names', function(t) {
+  t.plan(1);
+  // TODO: figure out why double parentheses are needed here.
+  t.deepEqual(o.{*: ((p => p.toUpperCase()))}, {A: 1});
+});
 
 test('pick property into object', function(t) {
   t.plan(1);
@@ -77,7 +63,7 @@ test('pick property into object', function(t) {
 
 test('pick renamed property into object', function(t) {
   t.plan(1);
-  t.deepEqual(o.{a as b}, {b: 1});
+  t.deepEqual(o.{a: b}, {b: 1});
 });
 
 test('pick missing mandatory property into object (throws)', function(t) {
@@ -113,11 +99,11 @@ test('pick properties based on object properties', function(t) {
   t.deepEqual(o.{(obj)}, {a: 1});
 });
 
-//test.skip('invalid value* in picklist throws', function(t) {
-//   t.plan(1);
-//   var val = 22;
-//   t.throws(function() { {(val)}. null; });
-// });
+test.skip('invalid value* in picklist throws', function(t) {
+   t.plan(1);
+   var val = 22;
+   t.throws(function() { null.{(val)}; });
+});
 
 test('rest operator picks up all props', function(t) {
   t.plan(1);
@@ -136,7 +122,7 @@ test('pick from non-object should throw if #?', function(t) {
   t.throws(function() { null.?{ a } });
 });
 
-// // PICK INTO ARRAY
+// PICK INTO ARRAY
 
 test('pick from property into array', function(t) {
   t.plan(1);
@@ -151,7 +137,7 @@ test('pick rest from object into array', function(t) {
 test('pick from object into array with rename', function(t) {
   t.plan(1);
   // This will create an array of the form `[undefined, 1]`.
-  t.equal((o.[a as 1]).length, 2);
+  t.equal((o.[a: 1]).length, 2);
 });
 
 
@@ -159,7 +145,6 @@ test('pick from object into array with rename', function(t) {
 
 test('swap array elements', function(t) {
   t.plan(1);
-  // This will create an array of the form `[undefined, 1]`.
   t.deepEqual(
     [1, 2].[1, 0],
     [2, 1]
@@ -182,13 +167,13 @@ test('pick from array into array using range', function(t) {
   );
 });
 
- test('reverse array', function(t) {
-   t.plan(1);
-   t.deepEqual(
-     [1, 2, 3].[-1 to 0],
-     [3, 2, 1]
-   );
- });
+test('reverse array', function(t) {
+  t.plan(1);
+  t.deepEqual(
+    [1, 2, 3].[-1 to 0],
+    [3, 2, 1]
+  );
+});
 
 test('initialize array', function(t) {
   t.plan(1);
@@ -222,35 +207,35 @@ test('clone array', function(t) {
   );
 });
 
-//test('flatten array', function(t) {
-//  t.plan(1);
-//  t.deepEqual(
-//     [[1, 2], [3, 4]].[*.*],
-//     [1, 2, 3, 4]
-//   );
-// });
+test('flatten array', function(t) {
+  t.plan(1);
+  t.deepEqual(
+    [[1, 2], [3, 4]].[*.*],
+    [1, 2, 3, 4]
+  );
+});
 
 test('clone array to two levels', function(t) {
   var a = [[1, 2], [3, 4]];
   t.plan(1);
-  t.deepEqual(a.[*:[*]], a);
+  t.deepEqual(a.[*..*], a);
 });
 
-// test('pick first element of each subarray', function(t) {
-//   t.plan(1);
-//   t.deepEqual(
-//     [[1, 2], [3, 4]].[* . 0],
-//     [1, 3]
-//   );
-// });
+test('pick first element of each subarray', function(t) {
+  t.plan(1);
+  t.deepEqual(
+    [[1, 2], [3, 4]].[* . 0],
+    [1, 3]
+  );
+});
 
-// test('take first element of each subarray', function(t) {
-//   t.plan(1);
-//   t.deepEqual(
-//     [[1, 2], [3, 4]].[*: [0]],
-//     [[1], [3]]
-//   );
-// });
+test('take first element of each subarray', function(t) {
+  t.plan(1);
+  t.deepEqual(
+    [[1, 2], [3, 4]].[*..[0]],
+    [[1], [3]]
+  );
+});
 
 // When the property picked is a function, we must adjust the `this`
 // in order to allow it to be called properly.
@@ -266,56 +251,57 @@ test('this handling', function(t) {
 test('nested pick', function(t) {
   t.plan(1);
   t.deepEqual(
-    {a: {b: 1}}.{a:{b}},
+    {a: {b: 1}}.{a..b},
     {a: {b: 1}}
   );
 });
 
 // Pick funcs
-// PERFORMANCE ISSUE!!!
-// test('pickfuncs as pickelts', function(t) {
-//   var o = {a: 1, b: 2};
-//   t.plan(3);
-//   t.deepEqual(o.{.a}, {a: 1});
-//   t.deepEqual(o.{.a, .b}, o);
-//   t.deepEqual(o.{.a, .*}, o, 'rest as function');
-// });
+test('pickfuncs as pickelts', function(t) {
+  var o = {a: 1, b: 2};
+  t.plan(3);
+  t.deepEqual(o.{.a}, {a: 1});
+  t.deepEqual(o.{.a, .b}, o);
+  t.deepEqual(o.{.a, .*}, o, 'rest as function');
+});
 
-test('pickfunc from array of objects', function(t) {
+test.skip('pickfunc from array of objects', function(t) {
   t.plan(1);
   var o = [{a: 1}, {a: 2}];
   t.deepEqual(o.map(.a), [1, 2]);
 });
 
 // Grouped picks
-test('grouped pick', function(t) { // POSSIBLE PERFORMANCE
+test('grouped pick', function(t) {
   t.plan(1);
+  t.deepEquals(
+    {a: 1, b: 2, c: 3}.{{a, b}},
+    {a: 1, b: 2},
+    "Basic grouped pick"
+  );
+});
 
-  // Basic grouped pick.
-//  t.deepEquals(
-//    {a: 1, b: 2, c: 3}.{{a, b}},
-//    {a: 1, b: 2},
-//    "Basic grouped pick"
-//  );
+test('apply renaming func to all members of group', function(t) {
+  t.plan(1);
+  t.deepEquals(
+    {a: 1, b: 2, c: 3}.{{a, b}: (p => p + "1")},
+    {a1: 1, b1: 2}
+  );
+});
 
-//   // Apply renaming func to all members of group.
-//   t.deepEquals(
-//     {a: 1, b: 2, c: 3}.{{a, b} as (p => p + "1")},
-//     {a1: 1, b1: 2},
-//     "Renaming grouped pick"
-//   );
+test('apply renaming func with index to all members of group', function(t) {
+  t.plan(1);
+  t.deepEquals(
+    {a: 1, b: 2, c: 3}.{{a, b}: ((p, i) => "x" + i)},
+    {x0: 1, x1: 2}
+  );
+});
 
-//   // Apply renaming func with index to all members of group.
-//   t.deepEquals(
-//     {a: 1, b: 2, c: 3}.{{a, b} as ((p, i) => "x" + i)},
-//     {x0: 1, x1: 2},
-//     "Renaming grouped pick with index"
-//   );
-
-//   // Apply must-not operator to all members of group.
-//   t.throws(
-//     function() {
-//       {a: 1, b: 2, c: 3}.{{a, b}^};
-//     }
-//   );
+test('apply must-not operator to all members of group', function(t) {
+              t.plan(1);
+  t.throws(
+    function() {
+      {a: 1, b: 2, c: 3}.{{a, b}^};
+    }
+  );
 });
