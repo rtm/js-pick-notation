@@ -1,13 +1,13 @@
 # Proposal for JavaScript pick notation (extended dot notation)
 
-### Executive summary
+### Summary
 
 This document proposes an extension to the JavaScript dot notation.
 Currently, dot notation only allows an identifier to follow the dot,
 meaning to retrieve the value of key with that name.
 
 This proposal extends the dot notation to allow curly-bracketed, square-bracketed, or parenthesized constructs
-following the dot, allowing properties to be extracted from the expression preceding the dot
+following the dot, allowing properties to be extracted ("picked") from the expression preceding the dot
 into a new object, array, or value.
 
 The curly-bracketed or square-bracketed constructs function very similarly to the
@@ -197,7 +197,7 @@ The unary form creates a **pick function**,
 which may be applied against an object by calling it, as in
 
     var pick = .{a};
-    pick(o)              // equivalent to o #{ a } (which is {a: o.a})
+    pick(o)              // equivalent to o.{a} (which is {a: o.a})
 
 This allows picks to be passed around as first-class objects:
 
@@ -447,7 +447,7 @@ the dot is less visible and a potential footgun.
 That would suggest extending the dot is better.
 
 4. Using the hash allows value picks without following parentheses,
-so we can write `a#-1` instead of having to write `a.(-1)`.
+so we can write `a#b!` instead of having to write `a.(b!)`.
 
 ## Revision History
 

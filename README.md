@@ -11,7 +11,7 @@ Also see the [proposal](js-pick-notation.md) and the [friendly introduction](doc
 This proposal extends the dot notation,
 to make it much easier to manipulate object properties,
 by "picking" them into new objects.
-It allows the dot to be followed by `()` (yielding a value), `{}` (yielding an object), or `[]` (yielding an array)`.
+It allows the dot to be followed by `()` (yielding a value), `{}` (yielding an object), or `[]` (yielding an array).
 The `()` and `[]` forms loosely follow destructuring syntax,
 but with additional features.
 

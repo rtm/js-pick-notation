@@ -313,3 +313,19 @@ test('force default', function(t) {
     {b: 22}
   );
 });
+
+test('rename with some other property value', function(t) {
+  t.plan(1);
+  t.deepEqual(
+    {a: 1, b: 'foo'}.{a: .b},
+    {foo: 1}
+  );
+});
+
+test('default with some other property value', function(t) {
+  t.plan(1);
+  t.deepEqual(
+    {a:1}.{b (=) .a},
+    {b:1}
+  );
+});
