@@ -316,11 +316,11 @@ Indicates that both `a and `b` are mandatory. Another example:
 This assigns property `a` from object `o` to variable `x`,
 while also insisting that property `b` be present.
 
-Pick groups may also be used to subpick some properties from multiple object-valued properties:
+Pick groups may also be used to do nested picks of some properties from multiple object-valued properties:
 
-    o.{{a, b}..{c}}
+    o.{{a, b}..c}
 
-The above picks the property `c` from both `o.a` and `o.b`, yielding
+The result is to nested-pick the property `c` from both `o.a` and `o.b`, yielding
 
     {a: {c}, b: {c}}
 

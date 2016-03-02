@@ -153,3 +153,5 @@ Here's a sampler:
  1. Specify properties based on a regular expression. For instance, pick all the properties starting with `p` by saying `o.{/^p/}`.
 
  1. Create "pick functions" with a unary dot. For instance, the function `.p1` picks the `p1` property from its parameter.
+
+See the [full spec here](../js-pick-notation.md).
