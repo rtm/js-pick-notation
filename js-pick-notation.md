@@ -102,7 +102,7 @@ or a parenthesized construct (which results in a value).
 ### Renaming
 
 The ability found in destructuring assignments
-to specify new property names with colons (*DestructuringAssignmentTarget*) is supported,
+to specify new property names with colons is supported,
 with the `:` notation.
 
     o.{p1: q1}   // {q1: o.p1}
@@ -110,7 +110,7 @@ with the `:` notation.
 ### Default values
 
 The syntax used in destructuring assignments
-to specify default values with equal signs is unchanged.
+to specify default values with equal signs is supported:
 
     o.{p1 = 42}
     o.(a = 42)
@@ -139,7 +139,7 @@ we can deep pick from inside the nested object with
 To leave the sub-object in place, but apply picking to it,
 using renaming in this case, we do what is called "nested" picking with `..`:
 
-    o.{p1, p2..{p21:as p21_new}}   // {p1: 1, p2: {p21_new: 21}}
+    o.{p1, p2..{p21: p21_new}}   // {p1: 1, p2: {p21_new: 21}}
 
 
 ### Picking properties into values
@@ -329,7 +329,7 @@ The above picks the property `c` from both `o.a` and `o.b`, yielding
 
 A **picker** is a key with an optional renamer and/or default.
 
-    key [:newkey] [= default]
+    key [:newkey] [=default]
 
 This takes the value given by key from the RHS,
 but renames it to `newkey`, which is usually just a key.
@@ -337,7 +337,14 @@ But it can also be an expression evaluating to a key, or a function providing a 
 When picking into arrays, the `newkey` is an integer index that says where in the array the value is to placed.
 
 The **default** is an expression which is used if the key is missing or the object is defective.
-The special syntax `:= default` is used to provide a function to provide a default rule.
+The special syntax `(=) default` is used to provide a function to provide a default rule.
+In addition, the equal sign may be prefixed by a colon may be used to force a default,
+even if the property is available in the object being picked from, as in `{a:=22}`.
+This syntax may be used to include new properties in the result of the pick,
+without worrying about whether the property exists in the object being picked from:
+
+    {a: 1, b: 2} . {a:=22, b}
+
 
 ### Advanced topic: nested picking and picker composition
 

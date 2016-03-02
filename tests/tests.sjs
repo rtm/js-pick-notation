@@ -117,10 +117,10 @@ test('mandatory rest with no remaining properties (throws)', function(t) {
   });
 });
 
-test('pick from non-object should throw if #?', function(t) {
-  t.plan(1);
-  t.throws(function() { null.?{ a } });
-});
+//test('pick from non-object should throw if #?', function(t) {
+//  t.plan(1);
+//  t.throws(function() { null.?{ a } });
+//});
 
 // PICK INTO ARRAY
 
@@ -178,7 +178,7 @@ test('reverse array', function(t) {
 test('initialize array', function(t) {
   t.plan(1);
   t.deepEqual(
-    [].[0 to 2 := (x => x * x)],
+    [].[0 to 2 (=) (x => x * x)],
     [0, 1, 4]
   );
 });
@@ -298,10 +298,18 @@ test('apply renaming func with index to all members of group', function(t) {
 });
 
 test('apply must-not operator to all members of group', function(t) {
-              t.plan(1);
+  t.plan(1);
   t.throws(
     function() {
       {a: 1, b: 2, c: 3}.{{a, b}^};
     }
+  );
+});
+
+test('force default', function(t) {
+  t.plan(1);
+  t.deepEqual(
+    {b: 99}.{b:=22},
+    {b: 22}
   );
 });
