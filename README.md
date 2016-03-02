@@ -1,10 +1,10 @@
 # Extended dot notation in JavaScript
 
-This repo provides information and a prototype of the proposal to extend JavaScript dot notation,
+This repo provides information about the proposal to extend JavaScript dot notation,
 also called "pick notation".
+It also includes a proof-of-concept implementation.
 
-See `js-pick-notation.md` for the proposal.
-See `docs/intro.jd` for a friendly introduction.
+Also see the [proposal](js-pick-notation.md) and the [friendly introduction](docs/intro.md).
 
 ### Basics
 
@@ -19,7 +19,8 @@ but with additional features.
 
 #### Picking into a value
 
-    o.(x!)        // retrieve a mandatory property (throws if missing))
+    o.(a = 42)    // Pick value with default
+    o.(x!)        // retrieve a mandatory property (throws if missing)
     a.(-1)        // find last element of an array
 
 #### Picking into an object
@@ -39,8 +40,8 @@ but with additional features.
     o.[a]         // [o.a]
     o.[*]         // [o.a, o.b, ...]
     a.[1, 0]      // swap
-    a.[-1 to  0]  // reverse
-    a.[0 to  n]   // slice
+    a.[-1 to 0]   // reverse
+    a.[0 to n]    // slice
 
 #### Guarded pick
 
@@ -71,10 +72,10 @@ but with additional features.
 ### Implementation details
 
 The pilot implementation uses the sweet.js macro package.
-The macro definitions are in `lib/pick.js`.
-The macros generate calls to runtime routines which are found in `lib/runtime.js`,
+The macro definitions are in [lib/pick.js](lib/pick.js).
+The macros generate calls to runtime routines which are found in [lib/runtime.js](lib/runtime.js),
 and are injected into the sweet output.
-See `IMPLEMENTATION.md` for more details.
+See [IMPLEMENTATION.md](docs/IMPLEMENTATION.jd) for more details.
 
 ### Prerequisites
 

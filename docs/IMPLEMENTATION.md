@@ -1,8 +1,8 @@
 # POC pick notation implementation
 
 The POC for pick notation is implemented using the sweet.js maro package.
-The macro definitions are in `lib/pick.js`.
-The macros generate calls to runtime routines which are found in `lib/runtime.js`,
+See the [macro definitions](../lib//pick.js).
+The macros generate calls to [runtime routines](../lib/runtime.js),
 and are injected into the sweet output.
 
 ## Limitations and known bugs
