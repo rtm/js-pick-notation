@@ -179,8 +179,6 @@ use the "must" picktype, as in `a.b.c!`.
 We call the entire syntactic construct a "pick".
 There are three basic forms.
 
-Picking from objects:
-
 * Pick into object (`object.{ picker, ... }`)
 * Pick into array  (`object.[ picker, ... ]`)
 * Pick into value  (`object.(picker)`)
@@ -423,12 +421,13 @@ In the below, `identifier` and `expression` have their JS meanings.
 # Picks
 <objectPick>         ::= "{" <picker>, ... "}"
 <arrayPick>          ::= "[" <picker>, ... "]"
+<valuePick>          ::= "(" <picker>, ... ")"
 <pick>               ::= <objectPick> | <arrayPick> | <valuePick>
 
 # Pick operators
 <pickOperator>       ::= "." | ".?"
 <pick>               ::= expression <pickOperator> <pick>
-<pickFunction        ::= <pickOperator> <pick>
+<pickFunction>       ::= <pickOperator> <pick>
 ```
 
 ## Which notation, dot or hash?
