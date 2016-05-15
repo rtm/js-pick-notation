@@ -6,6 +6,8 @@ It also includes a proof-of-concept implementation.
 
 Also see the [proposal](js-pick-notation.md) and the [friendly introduction](docs/intro.md).
 
+In addition, there is a lightweight proposal called [minimally extended dot notation](minimal/spec.md).
+
 ### Basics
 
 This proposal extends the dot notation,
