@@ -43,4 +43,4 @@ Deep picking:
 
     {a1: {a2: 42}}.{a1: {a2}}    // {a2: 42}
 
-See also the alternative proposal for [deconstructing assignment into objects](../deconstructing-assignment-into-object.md).
+See also the alternative proposal for [deconstructing assignment into objects](deconstructing-assignment-into-object.md).

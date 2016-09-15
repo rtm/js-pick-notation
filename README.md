@@ -1,84 +1,36 @@
-# Extended dot notation in JavaScript
+# JavaScript pick notation, or extended dot notation
 
-This repo provides information about the proposal to extend JavaScript dot notation,
-also called "pick notation".
-It also includes a proof-of-concept implementation.
+This repo provides proposals to enhance JavaScript with mechanisms for creating new objects with properties "picked" from other objects.
 
-Also see the [proposal](js-pick-notation.md) and the [friendly introduction](docs/intro.md).
+See the following documents:
 
-In addition, there is a lightweight proposal called [minimally extended dot notation](minimal/spec.md).
+1. A [full-featured proposal](js-pick-notation.md) and a [friendly introduction](docs/intro.md)
+2. A lightweight proposal called [minimally extended dot notation](minimally-extended-dot-notation.md)
+3. An alternative proposal for [deconstructing assignment into objects](deconstructing-assignment-into-object.md).
 
-### Basics
+### Extended dot notation
 
-This proposal extends the dot notation,
+This proposal extends JavaScript's current dot notation,
 to make it much easier to manipulate object properties,
 by "picking" them into new objects.
 It allows the dot to be followed by `()` (yielding a value), `{}` (yielding an object), or `[]` (yielding an array).
 The `()` and `[]` forms loosely follow destructuring syntax,
-but with additional features.
+but with many additional features.
 
-### Examples
+```
+o.{p1, p2}
+```
 
-#### Picking into a value
+### Minimally extended dot notation
 
-    o.(a = 42)    // Pick value with default
-    o.(x!)        // retrieve a mandatory property (throws if missing)
-    a.(-1)        // find last element of an array
+Minimally extended dot notation adheres to current destructuring syntax,
+and allows only the form `object.{props, ...}`.
 
-#### Picking into an object
+### Deconstructing assignment into objects
 
-    o.{a}         // retrieve property 'a'
-    o.{a, b}      // retrieve existing property and non-existing property
-    o.{a, b!}     // retrieve mandatory property (throws)
-    o.{a^}        // retrieve property which must not exist (throws if present))
-    o.{a: foo}    // retrieve property and rename
-    o.{b = 42}    // retrieve property with default
-    o.{(keys)}    // retrieve properties given in array
-    o.{/p/}       // retrieve properties matching regexp
-    o.{a~, *}     // omit `a`
+This alternative proposal precisely mimics current deconstructing assignment,
+but permits deconstructing into objects by wrapping it in curly braces:
 
-#### Picking into an array
-
-    o.[a]         // [o.a]
-    o.[*]         // [o.a, o.b, ...]
-    a.[1, 0]      // swap
-    a.[-1 to 0]   // reverse
-    a.[0 to n]    // slice
-
-#### Guarded pick
-
-    o.?a         // throws if `o` is not pickable
-
-#### Creating a stored pick
-
-    var pick = .{a, b};          // use unary dot to create stored pick
-    var picked = pick(o);        // apply pick by calling it on object
-
-### Installation
-
-    git clone https://github.com/rtm/js-pick-notation.git
-    cd js-pick-notation
-    npm install
-
-### Testing
-
-    npm test
-
-### Running your own
-
- 2. Create a JS file such as `test.sjs` (note extension).
- 3. Compile it with `make test.js`.
- 4. Run it with `babel-node test.js`.
-
-
-### Implementation details
-
-The pilot implementation uses the sweet.js macro package.
-The macro definitions are in [lib/pick.js](lib/pick.js).
-The macros generate calls to runtime routines which are found in [lib/runtime.js](lib/runtime.js),
-and are injected into the sweet output.
-See [IMPLEMENTATION.md](docs/IMPLEMENTATION.jd) for more details.
-
-### Prerequisites
-
-    npm install -g babel
+```
+{ {p1, p2} = o }
+```
