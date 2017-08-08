@@ -1,14 +1,13 @@
 {
-  "name": "js-pick-operator",
+  "name": "js-pick-notation",
   "version": "1.0.0",
-  "description": "This repo provides information and prototypes for the proposed JavaScript pick operator.",
+  "description": "Proposal for JavaScript pick notation",
   "main": "index.js",
   "scripts": {
-    "test": "make tests/tests.js; babel-node tests/tests.js | node_modules/.bin/tap-colorize --pass green"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rtm/js-pick-operator.git"
+    "url": "git+https://github.com/rtm/js-pick-notation.git"
   },
   "author": "Bob Myers <rtm@gol.com>",
   "license": "MIT",
@@ -18,16 +17,7 @@
     "pick"
   ],
   "bugs": {
-    "url": "https://github.com/rtm/js-pick-operator/issues"
+    "url": "https://github.com/rtm/js-pick-notation/issues"
   },
-  "homepage": "https://github.com/rtm/js-pick-operator#readme",
-  "devDependencies": {
-    "faucet": "0.0.1",
-    "sweet.js": "^0.7.4",
-    "tap-colorize": "^1.2.0",
-    "tape": "^4.4.0"
-  },
-  "bin": {
-    "pick": ""
-  }
+  "homepage": "https://github.com/rtm/js-pick-notation#readme"
 }
