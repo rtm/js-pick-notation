@@ -17,7 +17,7 @@ Because we are using destructuring assignment syntax, we can use defaults, renam
 
     const obj = {p1: 1, p2: {p21: 21}};
 
-    { {p1: new_p1, p2: {p21}, p3 = 3 }         // { new_p1: 1, p21: 21, p3: 3 }
+    { {p1: new_p1, p2: {p21}, p3 = 3 } = obj }         // { new_p1: 1, p21: 21, p3: 3 }
 
 ### Background and Motivation
 
@@ -49,7 +49,7 @@ People in the real world also regularly wonder about the absence of native facil
 instead of just variables.
 
 It makes good sense to re-use the current `{a, b} = obj` destructuring assignment syntax,
-since what we aer trying to do is in fact a kind of destructuring assignment,
+since what we are trying to do is in fact a kind of destructuring assignment,
 the difference being that the "assignment" is to an object property rather than a variable.
 
 ### Specification
