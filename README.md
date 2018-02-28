@@ -32,7 +32,7 @@ followed by an equal sign and the object to be "picked" from.
 Again, this is completely parallel: `obj.p1 = value` already means to set the value of `p1` in `obj` to `value`.
 Now, the syntax `obj.{p1, p2} = obj2` means to extract the values of `p1` and `p2` from `obj2`
 and add them to `obj1`.
-Again, we have a straightforward extension of both current property assignmnet notation and destructuring syntax.
+Again, we have a straightforward extension of both current property assignment notation and destructuring syntax.
 
 Subject to further thinking,
 if the object being picked into is null or undefined it would be created.
@@ -45,6 +45,8 @@ The motivation is for this proposal is
 1. Expressiveness and brevity for the common use cases of picking properties from objects into existing or new objects.
 1. Achieving parity by extending destructuring into object properties, not just variables.
 1. Achieving parity by estending the dot notation to refer to sets of properties on an object, not just a single property.
+1. (Possibly) enabling certain engine optimizations in the case of setting multiple properties on an object,
+such as in `obj1.{p1, p2} = obj2`, in which the retrieval from `obj2`, and the setting into `obj1`, could possibly be optimized, in comparsion to `obj1.p1 = obj2.p1; obj1.p2 = obj2.p2;`.
 
 Currently we have destructuring assignment,
 which provides a useful way to extract properties from objects.
@@ -78,7 +80,7 @@ by allowing the existing destrucuturing concept to be applied uniformly in conju
 ### Implementation issues
 
 Subject to review by experts, we think this proposal has a small syntactic footprint.
-Implementation should be relatively easier given the opportunity to leverage existing deconstructing logic.
+Implementation should be facilitated to the extent existing deconstructing logic can be leveraged.
 
 ### Specification
 
