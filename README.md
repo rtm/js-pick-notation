@@ -1,11 +1,13 @@
-## Proposal: Picked Properties in JavaScript (aka Extended Object Destructuring)
+## Proposal: Picked Properties in JavaScript (aka Extended Object Destructuring, aka Extended Dot Notation)
 
-This is a proposal to extend object destructuring to allow the destructuring of object properties ("picking") into new and existing objects.
+This is a proposal to extend dot noation to allow retrieval of multiple properties from objects,
+and setting of multiple properties on objects,
+leveraging object destructuring syntax to suppot renaming and defaults.
 
-### Subsetting ("picking from") objects
+### Retrieving multiple propetties from objects (aka "picking")
 
-To subset ("pick from") an object,
-we write the object name (or an expression evaluating to an object), then a dot,
+To retrieve (access) multiple properites from an object (sometimes referred to as "picking"),
+we simply extend dot notation by writing the object name (or an expression evaluating to an object), then a dot,
 then a destructuring construct
 (to be precise, the *ObjectAssignmentPattern* coming to the left of the equal sign in a destructuring assignment).
 
@@ -20,12 +22,13 @@ we can use defaults, renaming, and nesting without further ado:
 
     obj.{p1: new_p1, p2: {p21}, p3 = 3}
 
-### Setting selected properties ("picking into") objects
+### Setting multiple properties on an object
 
-To bring in a subset of properties *into* an object,
-we again write the object name, then a dot,
+To set (assign) a subset of properties *into* an (existing) object,
+we again extend current dot notation (`o.p1 = 42`) in a straightforward way,
+writing the object name, then a dot,
 then a destructuring construct (again, *ObjectAssignmentPattern*),
-followed by an equal sign and the object to be "picked" from.
+followed by an equal sign and then an object from which the property values are to be taken ("picked").
 
     obj1.{p1, p2} = obj2
 
@@ -33,10 +36,6 @@ Again, this is completely parallel: `obj.p1 = value` already means to set the va
 Now, the syntax `obj.{p1, p2} = obj2` means to extract the values of `p1` and `p2` from `obj2`
 and add them to `obj1`.
 Again, we have a straightforward extension of both current property assignment notation and destructuring syntax.
-
-Subject to further thinking,
-if the object being picked into is null or undefined it would be created.
-If it were not an object it would be a `TypeError`.
 
 ### Background and motivation
 
