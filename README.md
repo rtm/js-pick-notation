@@ -1,15 +1,15 @@
 ## Proposal: Picked Properties in JavaScript (aka Extended Object Destructuring, aka Extended Dot Notation)
 
-This is a proposal to extend dot noation to allow retrieval of multiple properties from objects,
+This is a proposal to extend dot notation to allow retrieval of multiple properties from objects,
 and setting of multiple properties on objects,
-leveraging object destructuring syntax to suppot renaming and defaults.
+leveraging object destructuring syntax to support renaming and defaults.
 
 ### Retrieving multiple propetties from objects (aka "picking")
 
-To retrieve (access) multiple properites from an object (sometimes referred to as "picking"),
+To retrieve (access) multiple properties from an object (sometimes referred to as "picking"),
 we simply extend dot notation by writing the object name (or an expression evaluating to an object), then a dot,
 then a destructuring construct
-(to be precise, the *ObjectAssignmentPattern* coming to the left of the equal sign in a destructuring assignment).
+(to be precise, the *ObjectAssignmentPattern* defined in the spec as coming to the left of the equal sign in a destructuring assignment).
 
     obj.{p1, p2}
 
